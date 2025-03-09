@@ -144,6 +144,31 @@ export const products: Product[] = [
     description: "Une palette complète avec des couleurs vibrantes pour tous vos looks.",
     rating: 4.7,
     inStock: true
+  },
+  // Nouveau produit ajouté
+  {
+    id: "13",
+    name: "Ordinateur portable UltraBook",
+    category: "electronique",
+    price: 899.99,
+    discountPrice: 799.99,
+    image: generateImageUrl(13),
+    description: "Un ordinateur portable ultrafin avec des performances exceptionnelles pour le travail et les loisirs.",
+    rating: 4.9,
+    inStock: true,
+    featured: true
+  },
+  // Nouveau produit ajouté
+  {
+    id: "14",
+    name: "Crème anti-âge revitalisante",
+    category: "beaute",
+    price: 69.99,
+    image: generateImageUrl(14),
+    description: "Une crème anti-âge enrichie en vitamines et en actifs naturels pour une peau visiblement plus jeune.",
+    rating: 4.6,
+    inStock: true,
+    featured: false
   }
 ];
 
