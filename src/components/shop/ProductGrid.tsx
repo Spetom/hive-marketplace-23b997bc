@@ -22,8 +22,13 @@ const ProductGrid = ({ products: initialProducts, title, showFilters = false }: 
   useEffect(() => {
     const storedProducts = localStorage.getItem('adminProducts');
     if (storedProducts) {
-      const parsedProducts = JSON.parse(storedProducts);
-      setProducts(parsedProducts);
+      try {
+        const parsedProducts = JSON.parse(storedProducts);
+        setProducts(parsedProducts);
+      } catch (error) {
+        console.error("Erreur lors du chargement des produits depuis localStorage:", error);
+        setProducts(initialProducts);
+      }
     } else {
       setProducts(initialProducts);
     }
@@ -31,7 +36,7 @@ const ProductGrid = ({ products: initialProducts, title, showFilters = false }: 
     // Simulate loading
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 800);
     
     return () => clearTimeout(timer);
   }, [initialProducts]);
@@ -76,7 +81,7 @@ const ProductGrid = ({ products: initialProducts, title, showFilters = false }: 
                 )}
                 onClick={() => setSelectedCategory(category.id)}
               >
-                {category.name} ({category.count})
+                {category.name} ({products.filter(p => p.category === category.id).length})
               </Button>
             ))}
           </div>

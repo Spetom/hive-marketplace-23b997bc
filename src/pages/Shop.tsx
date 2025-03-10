@@ -2,24 +2,42 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductGrid from '@/components/shop/ProductGrid';
-import { products, categories } from '@/lib/data';
+import { products as initialProducts, categories } from '@/lib/data';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Search, FilterX } from 'lucide-react';
+import { Product } from '@/lib/data';
 
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get('category');
-  const [filteredProducts, setFilteredProducts] = useState(products);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
   const [searchQuery, setSearchQuery] = useState('');
   const [priceRange, setPriceRange] = useState([0, 300]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     categoryParam ? [categoryParam] : []
   );
   const [inStockOnly, setInStockOnly] = useState(false);
+  
+  // Charger les produits depuis localStorage
+  useEffect(() => {
+    const storedProducts = localStorage.getItem('adminProducts');
+    if (storedProducts) {
+      try {
+        const parsedProducts = JSON.parse(storedProducts);
+        setProducts(parsedProducts);
+      } catch (error) {
+        console.error("Erreur lors du chargement des produits depuis localStorage:", error);
+        setProducts(initialProducts);
+      }
+    } else {
+      setProducts(initialProducts);
+    }
+  }, []);
   
   useEffect(() => {
     // Filtrer les produits en fonction des critères
@@ -51,7 +69,7 @@ const Shop = () => {
     }
     
     setFilteredProducts(result);
-  }, [searchQuery, selectedCategories, priceRange, inStockOnly]);
+  }, [searchQuery, selectedCategories, priceRange, inStockOnly, products]);
   
   // Mise à jour de l'URL lorsque les catégories changent
   useEffect(() => {
@@ -78,6 +96,11 @@ const Shop = () => {
     setPriceRange([0, 300]);
     setSelectedCategories([]);
     setInStockOnly(false);
+  };
+  
+  // Calculer les compteurs de catégories en fonction des produits actuels
+  const getCategoryCount = (categoryId: string) => {
+    return products.filter(product => product.category === categoryId).length;
   };
   
   return (
@@ -128,7 +151,7 @@ const Shop = () => {
                         htmlFor={`category-${category.id}`}
                         className="ml-2 text-muted-foreground cursor-pointer"
                       >
-                        {category.name} ({category.count})
+                        {category.name} ({getCategoryCount(category.id)})
                       </label>
                     </div>
                   ))}
