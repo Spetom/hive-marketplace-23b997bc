@@ -12,11 +12,7 @@ export interface Product {
   featured?: boolean;
 }
 
-// Images placeholder pour les produits
-const generateImageUrl = (index: number): string => {
-  return `https://source.unsplash.com/random/300x300?product&sig=${index}`;
-};
-
+// Les nouvelles images pour les produits
 export const products: Product[] = [
   {
     id: "1",
@@ -24,7 +20,7 @@ export const products: Product[] = [
     category: "electronique",
     price: 299.99,
     discountPrice: 249.99,
-    image: generateImageUrl(1),
+    image: "/lovable-uploads/647cc294-27a3-44f3-82fd-d377923d4499.png",
     description: "Un smartphone haut de gamme avec un appareil photo exceptionnel et une batterie longue durée.",
     rating: 4.5,
     inStock: true,
@@ -35,7 +31,7 @@ export const products: Product[] = [
     name: "Montre connectée Pulse",
     category: "electronique",
     price: 129.99,
-    image: generateImageUrl(2),
+    image: "/lovable-uploads/91ebc91d-b4b1-4b09-a3ba-e0f635a4bd28.png",
     description: "Suivez votre activité physique et restez connecté avec cette montre élégante.",
     rating: 4.2,
     inStock: true
@@ -46,7 +42,7 @@ export const products: Product[] = [
     category: "mode",
     price: 159.99,
     discountPrice: 129.99,
-    image: generateImageUrl(3),
+    image: "/lovable-uploads/dfe3fb08-8965-4e0a-8188-35a46ffa96af.png",
     description: "Un sac à main en cuir véritable fabriqué par des artisans qualifiés.",
     rating: 4.7,
     inStock: true,
@@ -54,13 +50,14 @@ export const products: Product[] = [
   },
   {
     id: "4",
-    name: "Chaussures de sport légères",
+    name: "Legging sport La Ruche d'Or",
     category: "mode",
     price: 89.99,
-    image: generateImageUrl(4),
-    description: "Chaussures confortables avec un amorti exceptionnel pour tous vos entraînements.",
+    image: "/lovable-uploads/1d2b4ed7-a506-4c06-98fc-88e28e7ce734.png",
+    description: "Legging confortable avec motif La Ruche d'Or pour tous vos entraînements.",
     rating: 4.3,
-    inStock: true
+    inStock: true,
+    featured: true
   },
   {
     id: "5",
@@ -84,11 +81,11 @@ export const products: Product[] = [
   },
   {
     id: "7",
-    name: "Sérum visage hydratant",
-    category: "beaute",
+    name: "T-shirt La Ruche d'Or",
+    category: "mode",
     price: 29.99,
-    image: generateImageUrl(7),
-    description: "Hydratez votre peau en profondeur avec ce sérum aux ingrédients naturels.",
+    image: "/lovable-uploads/e4118eb3-fc71-40d4-8485-25ffe9b4e6b5.png",
+    description: "T-shirt confortable avec logo La Ruche d'Or, disponible en plusieurs tailles.",
     rating: 4.6,
     inStock: true,
     featured: true
@@ -116,13 +113,14 @@ export const products: Product[] = [
   },
   {
     id: "10",
-    name: "Ensemble costume homme",
+    name: "Casquette La Ruche d'Or",
     category: "mode",
-    price: 199.99,
-    image: generateImageUrl(10),
-    description: "Un costume élégant pour toutes vos occasions spéciales.",
+    price: 24.99,
+    image: "/lovable-uploads/5044e05d-ed1e-4f1e-89a9-ccbe5762efa1.png",
+    description: "Casquette élégante avec logo La Ruche d'Or, parfaite pour toutes les saisons.",
     rating: 4.5,
-    inStock: true
+    inStock: true,
+    featured: true
   },
   {
     id: "11",
@@ -136,16 +134,16 @@ export const products: Product[] = [
   },
   {
     id: "12",
-    name: "Palette de maquillage professionnelle",
-    category: "beaute",
+    name: "Sweatshirt La Ruche d'Or",
+    category: "mode",
     price: 49.99,
     discountPrice: 39.99,
-    image: generateImageUrl(12),
-    description: "Une palette complète avec des couleurs vibrantes pour tous vos looks.",
+    image: "/lovable-uploads/8c802d68-775a-4882-b7fe-3a1f44ade043.png",
+    description: "Sweatshirt confortable avec logo La Ruche d'Or, parfait pour les journées fraîches.",
     rating: 4.7,
-    inStock: true
+    inStock: true,
+    featured: true
   },
-  // Nouveau produit ajouté
   {
     id: "13",
     name: "Ordinateur portable UltraBook",
@@ -158,7 +156,6 @@ export const products: Product[] = [
     inStock: true,
     featured: true
   },
-  // Nouveau produit ajouté
   {
     id: "14",
     name: "Crème anti-âge revitalisante",
@@ -171,6 +168,11 @@ export const products: Product[] = [
     featured: false
   }
 ];
+
+// Images placeholder pour les produits sans images spécifiques
+const generateImageUrl = (index: number): string => {
+  return `https://source.unsplash.com/random/300x300?product&sig=${index}`;
+};
 
 export const categories = [
   { id: "electronique", name: "Électronique", count: products.filter(p => p.category === "electronique").length },
