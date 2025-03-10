@@ -64,16 +64,7 @@ const Hero = () => {
           </div>
           
           <div className={`flex justify-center ${isVisible ? 'animate-fade-in opacity-100' : 'opacity-0'} transition-all duration-700 delay-300`}>
-            <div className="relative">
-              <div className="absolute inset-0 bg-ruche-gold rounded-full blur-3xl opacity-20 scale-90"></div>
-              <div className="relative rounded-full p-2 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm border border-white/10 shadow-xl">
-                <img
-                  src="/lovable-uploads/79615c23-e955-46f0-ae0d-ea61a982bfab.png"
-                  alt="La Ruche d'Or Logo"
-                  className="w-64 h-64 object-contain z-10 relative"
-                />
-              </div>
-            </div>
+            {/* Logo has been removed from here */}
           </div>
         </div>
       </div>

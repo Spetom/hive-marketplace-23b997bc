@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
 import Index from "./pages/Index";
 import About from "./pages/About";
@@ -22,6 +22,24 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          {/* Logo header ajouté en haut de page */}
+          <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm shadow-sm py-3">
+            <div className="container mx-auto px-4 flex justify-center items-center">
+              <Link to="/" className="flex items-center">
+                <img
+                  src="/lovable-uploads/79615c23-e955-46f0-ae0d-ea61a982bfab.png"
+                  alt="La Ruche d'Or Logo"
+                  className="h-12 object-contain"
+                />
+                <span className="font-heading font-bold text-xl text-ruche-purple ml-2 hidden sm:inline-block">
+                  LA RUCHE D'OR
+                </span>
+              </Link>
+            </div>
+          </div>
+          {/* Ajout d'un espace pour compenser la hauteur du header fixe */}
+          <div className="h-20"></div>
+          
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/about" element={<About />} />
