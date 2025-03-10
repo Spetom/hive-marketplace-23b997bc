@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Product, products, categories } from '@/lib/data';
 import { Button } from '@/components/ui/button';
@@ -32,7 +31,8 @@ import {
   PlusCircle, 
   Pencil, 
   Trash, 
-  ImagePlus 
+  ImagePlus,
+  Save
 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -45,7 +45,6 @@ const ProductsManager = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Produit temporaire pour l'édition/création
   const [tempProduct, setTempProduct] = useState<Product>({
     id: '',
     name: '',
@@ -77,7 +76,10 @@ const ProductsManager = () => {
   const confirmDeleteProduct = () => {
     if (editingProduct) {
       setProductsList(prev => prev.filter(p => p.id !== editingProduct.id));
-      toast.success(`Produit "${editingProduct.name}" supprimé`);
+      toast.success(`Produit "${editingProduct.name}" supprimé`, {
+        description: "Les modifications ont été enregistrées automatiquement.",
+        icon: <Save className="h-4 w-4" />
+      });
       setIsDeleteDialogOpen(false);
       setEditingProduct(null);
     }
@@ -102,20 +104,23 @@ const ProductsManager = () => {
 
   const saveProduct = () => {
     if (isCreating) {
-      // Création d'un nouveau produit
       setProductsList(prev => [...prev, tempProduct]);
-      toast.success(`Produit "${tempProduct.name}" créé`);
+      toast.success(`Produit "${tempProduct.name}" créé`, {
+        description: "Les modifications ont été enregistrées automatiquement.",
+        icon: <Save className="h-4 w-4" />
+      });
     } else {
-      // Modification d'un produit existant
       setProductsList(prev => 
         prev.map(p => p.id === tempProduct.id ? tempProduct : p)
       );
-      toast.success(`Produit "${tempProduct.name}" mis à jour`);
+      toast.success(`Produit "${tempProduct.name}" mis à jour`, {
+        description: "Les modifications ont été enregistrées automatiquement.",
+        icon: <Save className="h-4 w-4" />
+      });
     }
     setIsDialogOpen(false);
   };
 
-  // Fonction pour partager les données
   const exportData = () => {
     const dataStr = JSON.stringify(productsList, null, 2);
     const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
@@ -127,7 +132,9 @@ const ProductsManager = () => {
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click();
     
-    toast.success('Données exportées avec succès');
+    toast.success('Données exportées avec succès', {
+      description: "Toutes les modifications ont été incluses dans l'export."
+    });
   };
 
   return (
@@ -258,7 +265,6 @@ const ProductsManager = () => {
         </Table>
       </div>
       
-      {/* Dialog pour édition/création de produit */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -413,7 +419,6 @@ const ProductsManager = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Dialog de confirmation de suppression */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
