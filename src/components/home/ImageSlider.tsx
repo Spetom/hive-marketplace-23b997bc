@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { Slider } from "@/components/ui/slider";
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Images de mannequins en tenues de pagne
@@ -33,10 +32,18 @@ export const ImageSlider = () => {
       
       return () => clearInterval(interval);
     }
-  }, [isPaused, currentIndex]);
+  }, [isPaused]);
+
+  // Pause au survol de la souris
+  const handleMouseEnter = () => setIsPaused(true);
+  const handleMouseLeave = () => setIsPaused(false);
 
   return (
-    <div className="relative w-full h-full">
+    <div 
+      className="relative w-full h-full"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       {/* Images du slider avec fondu */}
       {sliderImages.map((image, index) => (
         <div
