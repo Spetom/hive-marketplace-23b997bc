@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Cart from './Cart';
+import { Cart } from './Cart';
 
 const CartButton = () => {
   const { totalItems } = useCart();
