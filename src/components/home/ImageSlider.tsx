@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -7,7 +6,6 @@ const sliderImages = [
   "/lovable-uploads/ec250035-70f6-4b60-9bba-243d79a04594.png",
   "/lovable-uploads/1ac13343-eaa8-410d-b6a1-2627667b0a0d.png",
   "/lovable-uploads/f6e0747e-1013-48a9-bbb7-715083e1bda6.png",
-  "/lovable-uploads/f577dd69-88ac-424b-a8ff-3d745fdf7ad3.png",
   "/lovable-uploads/cc2f561f-591a-4d84-a7b1-c23653a0d6be.png"
 ];
 
