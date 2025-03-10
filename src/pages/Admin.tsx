@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { 
   Tabs, 
@@ -10,9 +10,20 @@ import {
 import { Button } from "@/components/ui/button";
 import ProductsManager from '@/components/admin/ProductsManager';
 import AdminLogin from '@/components/admin/AdminLogin';
+import { products as initialProducts } from '@/lib/data';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // Initialize products from localStorage or fall back to initial data
+  useEffect(() => {
+    // Check if products exist in localStorage
+    const storedProducts = localStorage.getItem('adminProducts');
+    if (!storedProducts) {
+      // If not, store the initial products
+      localStorage.setItem('adminProducts', JSON.stringify(initialProducts));
+    }
+  }, []);
   
   if (!isAuthenticated) {
     return <AdminLogin onAuthenticated={() => setIsAuthenticated(true)} />;

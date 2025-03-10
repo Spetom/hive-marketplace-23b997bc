@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { Product, products, categories } from '@/lib/data';
+import { Product, products as initialProducts, categories } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -38,7 +39,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
 const ProductsManager = () => {
-  const [productsList, setProductsList] = useState<Product[]>([...products]);
+  const [productsList, setProductsList] = useState<Product[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -56,6 +57,24 @@ const ProductsManager = () => {
     inStock: true,
     featured: false
   });
+
+  // Load products from localStorage on component mount
+  useEffect(() => {
+    const storedProducts = localStorage.getItem('adminProducts');
+    if (storedProducts) {
+      setProductsList(JSON.parse(storedProducts));
+    } else {
+      setProductsList(initialProducts);
+      localStorage.setItem('adminProducts', JSON.stringify(initialProducts));
+    }
+  }, []);
+
+  // Update localStorage whenever products change
+  useEffect(() => {
+    if (productsList.length > 0) {
+      localStorage.setItem('adminProducts', JSON.stringify(productsList));
+    }
+  }, [productsList]);
 
   const filteredProducts = productsList.filter(product => 
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -75,7 +94,10 @@ const ProductsManager = () => {
 
   const confirmDeleteProduct = () => {
     if (editingProduct) {
-      setProductsList(prev => prev.filter(p => p.id !== editingProduct.id));
+      const updatedProducts = productsList.filter(p => p.id !== editingProduct.id);
+      setProductsList(updatedProducts);
+      localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
+      
       toast.success(`Produit "${editingProduct.name}" supprimé`, {
         description: "Les modifications ont été enregistrées automatiquement.",
         icon: <Save className="h-4 w-4" />
@@ -103,21 +125,26 @@ const ProductsManager = () => {
   };
 
   const saveProduct = () => {
+    let updatedProducts;
+    
     if (isCreating) {
-      setProductsList(prev => [...prev, tempProduct]);
+      updatedProducts = [...productsList, tempProduct];
+      setProductsList(updatedProducts);
       toast.success(`Produit "${tempProduct.name}" créé`, {
         description: "Les modifications ont été enregistrées automatiquement.",
         icon: <Save className="h-4 w-4" />
       });
     } else {
-      setProductsList(prev => 
-        prev.map(p => p.id === tempProduct.id ? tempProduct : p)
-      );
+      updatedProducts = productsList.map(p => p.id === tempProduct.id ? tempProduct : p);
+      setProductsList(updatedProducts);
       toast.success(`Produit "${tempProduct.name}" mis à jour`, {
         description: "Les modifications ont été enregistrées automatiquement.",
         icon: <Save className="h-4 w-4" />
       });
     }
+    
+    // Save to localStorage
+    localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
     setIsDialogOpen(false);
   };
 

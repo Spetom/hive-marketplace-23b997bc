@@ -12,19 +12,29 @@ interface ProductGridProps {
   showFilters?: boolean;
 }
 
-const ProductGrid = ({ products, title, showFilters = false }: ProductGridProps) => {
+const ProductGrid = ({ products: initialProducts, title, showFilters = false }: ProductGridProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
   
+  // Load products from localStorage if available
   useEffect(() => {
-    // Simuler un chargement de données
+    const storedProducts = localStorage.getItem('adminProducts');
+    if (storedProducts) {
+      const parsedProducts = JSON.parse(storedProducts);
+      setProducts(parsedProducts);
+    } else {
+      setProducts(initialProducts);
+    }
+    
+    // Simulate loading
     const timer = setTimeout(() => {
       setLoading(false);
     }, 1000);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [initialProducts]);
   
   useEffect(() => {
     if (selectedCategory === 'all') {
