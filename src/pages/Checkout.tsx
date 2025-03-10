@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
-import { ShoppingCart, CreditCard, Wallet, ArrowLeft, CheckCircle } from 'lucide-react';
+import { ShoppingCart, CreditCard, Wallet, ArrowLeft, CheckCircle, Globe, Phone } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Checkout = () => {
@@ -13,6 +13,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('fedapay');
   const [customerInfo, setCustomerInfo] = useState({
     fullName: '',
     email: '',
@@ -46,13 +47,24 @@ const Checkout = () => {
 
     setPaymentProcessing(true);
 
-    // Simuler un processus de paiement (normalement vous appelleriez l'API FedaPay ici)
+    // Simuler un processus de paiement (normalement vous appelleriez l'API du processeur de paiement ici)
     setTimeout(() => {
       setPaymentProcessing(false);
       setPaymentCompleted(true);
       clearCart();
-      toast.success("Paiement effectué avec succès!");
+      toast.success(`Paiement effectué avec succès via ${getPaymentMethodName(selectedPaymentMethod)}!`);
     }, 2000);
+  };
+
+  const getPaymentMethodName = (method: string) => {
+    switch(method) {
+      case 'fedapay': return 'FedaPay';
+      case 'mtn': return 'MTN Mobile Money';
+      case 'moov': return 'Moov Money';
+      case 'visa': return 'Visa/Mastercard';
+      case 'paypal': return 'PayPal';
+      default: return 'FedaPay';
+    }
   };
 
   if (items.length === 0 && !paymentCompleted) {
@@ -221,11 +233,64 @@ const Checkout = () => {
                 <h2 className="text-xl font-semibold text-ruche-purple mb-6">Méthode de paiement</h2>
                 
                 <div className="space-y-4">
-                  <div className="flex items-center gap-4 p-4 border border-ruche-gold rounded-lg bg-ruche-gold/5">
-                    <Wallet className="text-ruche-gold h-6 w-6" />
+                  {/* Options de paiement béninoises */}
+                  <div 
+                    className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${selectedPaymentMethod === 'fedapay' ? 'border-ruche-gold bg-ruche-gold/5' : 'border-border hover:border-ruche-gold/50'}`}
+                    onClick={() => setSelectedPaymentMethod('fedapay')}
+                  >
+                    <Wallet className={`h-6 w-6 ${selectedPaymentMethod === 'fedapay' ? 'text-ruche-gold' : 'text-muted-foreground'}`} />
                     <div>
                       <h3 className="font-medium text-ruche-purple">FedaPay</h3>
                       <p className="text-sm text-muted-foreground">Paiement sécurisé via FedaPay</p>
+                    </div>
+                  </div>
+                  
+                  <div 
+                    className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${selectedPaymentMethod === 'mtn' ? 'border-ruche-gold bg-ruche-gold/5' : 'border-border hover:border-ruche-gold/50'}`}
+                    onClick={() => setSelectedPaymentMethod('mtn')}
+                  >
+                    <Phone className={`h-6 w-6 ${selectedPaymentMethod === 'mtn' ? 'text-ruche-gold' : 'text-muted-foreground'}`} />
+                    <div>
+                      <h3 className="font-medium text-ruche-purple">MTN Mobile Money</h3>
+                      <p className="text-sm text-muted-foreground">Paiement via MTN Mobile Money</p>
+                    </div>
+                  </div>
+                  
+                  <div 
+                    className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${selectedPaymentMethod === 'moov' ? 'border-ruche-gold bg-ruche-gold/5' : 'border-border hover:border-ruche-gold/50'}`}
+                    onClick={() => setSelectedPaymentMethod('moov')}
+                  >
+                    <Phone className={`h-6 w-6 ${selectedPaymentMethod === 'moov' ? 'text-ruche-gold' : 'text-muted-foreground'}`} />
+                    <div>
+                      <h3 className="font-medium text-ruche-purple">Moov Money</h3>
+                      <p className="text-sm text-muted-foreground">Paiement via Moov Money</p>
+                    </div>
+                  </div>
+                  
+                  {/* Options de paiement internationales */}
+                  <div className="mt-6 mb-2">
+                    <h3 className="text-sm font-medium text-muted-foreground">Options internationales</h3>
+                  </div>
+                  
+                  <div 
+                    className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${selectedPaymentMethod === 'visa' ? 'border-ruche-gold bg-ruche-gold/5' : 'border-border hover:border-ruche-gold/50'}`}
+                    onClick={() => setSelectedPaymentMethod('visa')}
+                  >
+                    <CreditCard className={`h-6 w-6 ${selectedPaymentMethod === 'visa' ? 'text-ruche-gold' : 'text-muted-foreground'}`} />
+                    <div>
+                      <h3 className="font-medium text-ruche-purple">Carte de crédit</h3>
+                      <p className="text-sm text-muted-foreground">Visa, Mastercard, American Express</p>
+                    </div>
+                  </div>
+                  
+                  <div 
+                    className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${selectedPaymentMethod === 'paypal' ? 'border-ruche-gold bg-ruche-gold/5' : 'border-border hover:border-ruche-gold/50'}`}
+                    onClick={() => setSelectedPaymentMethod('paypal')}
+                  >
+                    <Globe className={`h-6 w-6 ${selectedPaymentMethod === 'paypal' ? 'text-ruche-gold' : 'text-muted-foreground'}`} />
+                    <div>
+                      <h3 className="font-medium text-ruche-purple">PayPal</h3>
+                      <p className="text-sm text-muted-foreground">Paiement sécurisé via PayPal</p>
                     </div>
                   </div>
                 </div>
@@ -283,7 +348,7 @@ const Checkout = () => {
                   ) : (
                     <>
                       <CreditCard className="mr-2 h-5 w-5" />
-                      Payer maintenant
+                      Payer maintenant via {getPaymentMethodName(selectedPaymentMethod)}
                     </>
                   )}
                 </Button>

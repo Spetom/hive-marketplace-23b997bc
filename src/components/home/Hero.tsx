@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import CartButton from '../shop/CartButton';
 
 const Hero = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -17,6 +18,11 @@ const Hero = () => {
   
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+      {/* Panier en haut à droite */}
+      <div className="absolute top-6 right-6 z-20">
+        <CartButton />
+      </div>
+      
       {/* Fond avec dégradé */}
       <div className="absolute inset-0 bg-gradient-to-r from-ruche-purple to-ruche-purple-light opacity-95 z-0"></div>
       
