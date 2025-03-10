@@ -54,13 +54,14 @@ export const ImageSlider = () => {
             index === currentIndex ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          <div 
-            className="w-full h-full bg-cover bg-center bg-no-repeat"
+          <img 
+            src={image}
+            alt={`Mannequin en tenue de pagne ${index + 1}`}
+            className="w-full h-full object-cover"
             style={{ 
-              backgroundImage: `url(${image})`,
-              backgroundPosition: '50% 20%', // Ajusté pour mieux cadrer les visages
-              backgroundSize: 'cover'
+              objectPosition: '50% 20%' // Ajusté pour mieux cadrer les visages
             }}
+            loading={index === 0 ? "eager" : "lazy"}
           />
         </div>
       ))}
