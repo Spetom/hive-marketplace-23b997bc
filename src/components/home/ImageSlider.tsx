@@ -1,10 +1,10 @@
+
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Images de mannequins en tenues de pagne avec fond violet
 const sliderImages = [
-  "/lovable-uploads/ec250035-70f6-4b60-9bba-243d79a04594.png",
-  "/lovable-uploads/f6e0747e-1013-48a9-bbb7-715083e1bda6.png"
+  // Toutes les images ont été supprimées
 ];
 
 export const ImageSlider = () => {
@@ -23,7 +23,7 @@ export const ImageSlider = () => {
 
   // Défilement automatique
   useEffect(() => {
-    if (!isPaused) {
+    if (!isPaused && sliderImages.length > 0) {
       const interval = setInterval(() => {
         nextSlide();
       }, 5000);
@@ -38,10 +38,15 @@ export const ImageSlider = () => {
 
   return (
     <div 
-      className="relative w-full h-full"
+      className="relative w-full h-full bg-ruche-purple"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
+      {/* Fond uni lorsqu'il n'y a pas d'images */}
+      {sliderImages.length === 0 && (
+        <div className="absolute inset-0 bg-ruche-purple"></div>
+      )}
+      
       {/* Images du slider avec fondu */}
       {sliderImages.map((image, index) => (
         <div
@@ -62,37 +67,39 @@ export const ImageSlider = () => {
         </div>
       ))}
       
-      {/* Contrôles de navigation */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 flex items-center space-x-2">
-        <button 
-          onClick={prevSlide}
-          className="p-2 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-all"
-          aria-label="Image précédente"
-        >
-          <ChevronLeft size={20} />
-        </button>
-        
-        <div className="flex space-x-1">
-          {sliderImages.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-2 h-2 rounded-full ${
-                index === currentIndex ? 'bg-ruche-gold' : 'bg-white/50'
-              }`}
-              aria-label={`Aller à l'image ${index + 1}`}
-            />
-          ))}
+      {/* Contrôles de navigation - masqués s'il n'y a pas d'images */}
+      {sliderImages.length > 0 && (
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 flex items-center space-x-2">
+          <button 
+            onClick={prevSlide}
+            className="p-2 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-all"
+            aria-label="Image précédente"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          
+          <div className="flex space-x-1">
+            {sliderImages.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`w-2 h-2 rounded-full ${
+                  index === currentIndex ? 'bg-ruche-gold' : 'bg-white/50'
+                }`}
+                aria-label={`Aller à l'image ${index + 1}`}
+              />
+            ))}
+          </div>
+          
+          <button 
+            onClick={nextSlide}
+            className="p-2 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-all"
+            aria-label="Image suivante"
+          >
+            <ChevronRight size={20} />
+          </button>
         </div>
-        
-        <button 
-          onClick={nextSlide}
-          className="p-2 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-all"
-          aria-label="Image suivante"
-        >
-          <ChevronRight size={20} />
-        </button>
-      </div>
+      )}
     </div>
   );
 };
