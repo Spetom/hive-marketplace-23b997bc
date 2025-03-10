@@ -5,8 +5,25 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
-import { ShoppingCart, CreditCard, Wallet, ArrowLeft, CheckCircle, Globe, Phone } from 'lucide-react';
+import { 
+  ShoppingCart, 
+  CreditCard, 
+  Wallet, 
+  ArrowLeft, 
+  CheckCircle, 
+  Globe, 
+  Phone,
+  AlertCircle 
+} from 'lucide-react';
 import { toast } from 'sonner';
+import { countries } from '@/lib/data';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
@@ -22,12 +39,20 @@ const Checkout = () => {
     city: '',
     country: 'Bénin',
   });
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setCustomerInfo(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleCountryChange = (value: string) => {
+    setCustomerInfo(prev => ({
+      ...prev,
+      country: value
     }));
   };
 
@@ -46,6 +71,7 @@ const Checkout = () => {
     }
 
     setPaymentProcessing(true);
+    setPaymentError(null);
 
     // Simuler un processus de paiement (normalement vous appelleriez l'API du processeur de paiement ici)
     setTimeout(() => {
@@ -65,6 +91,12 @@ const Checkout = () => {
       case 'paypal': return 'PayPal';
       default: return 'FedaPay';
     }
+  };
+
+  const handleSelectPaymentMethod = (method: string) => {
+    setSelectedPaymentMethod(method);
+    setPaymentError(null);
+    toast.info(`Méthode de paiement: ${getPaymentMethodName(method)} sélectionnée`);
   };
 
   if (items.length === 0 && !paymentCompleted) {
@@ -214,15 +246,23 @@ const Checkout = () => {
                   </div>
                   <div>
                     <label htmlFor="country" className="block text-sm font-medium text-ruche-purple mb-1">
-                      Pays
+                      Pays *
                     </label>
-                    <Input
-                      id="country"
-                      name="country"
-                      value={customerInfo.country}
-                      onChange={handleInputChange}
-                      disabled
-                    />
+                    <Select 
+                      value={customerInfo.country} 
+                      onValueChange={handleCountryChange}
+                    >
+                      <SelectTrigger id="country" className="w-full">
+                        <SelectValue placeholder="Sélectionnez un pays" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {countries.map((country) => (
+                          <SelectItem key={country} value={country}>
+                            {country}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -232,11 +272,18 @@ const Checkout = () => {
               <div className="p-6">
                 <h2 className="text-xl font-semibold text-ruche-purple mb-6">Méthode de paiement</h2>
                 
+                {paymentError && (
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center gap-2 text-red-600">
+                    <AlertCircle size={16} />
+                    <p className="text-sm">{paymentError}</p>
+                  </div>
+                )}
+                
                 <div className="space-y-4">
                   {/* Options de paiement béninoises */}
                   <div 
                     className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${selectedPaymentMethod === 'fedapay' ? 'border-ruche-gold bg-ruche-gold/5' : 'border-border hover:border-ruche-gold/50'}`}
-                    onClick={() => setSelectedPaymentMethod('fedapay')}
+                    onClick={() => handleSelectPaymentMethod('fedapay')}
                   >
                     <Wallet className={`h-6 w-6 ${selectedPaymentMethod === 'fedapay' ? 'text-ruche-gold' : 'text-muted-foreground'}`} />
                     <div>
@@ -247,7 +294,7 @@ const Checkout = () => {
                   
                   <div 
                     className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${selectedPaymentMethod === 'mtn' ? 'border-ruche-gold bg-ruche-gold/5' : 'border-border hover:border-ruche-gold/50'}`}
-                    onClick={() => setSelectedPaymentMethod('mtn')}
+                    onClick={() => handleSelectPaymentMethod('mtn')}
                   >
                     <Phone className={`h-6 w-6 ${selectedPaymentMethod === 'mtn' ? 'text-ruche-gold' : 'text-muted-foreground'}`} />
                     <div>
@@ -258,7 +305,7 @@ const Checkout = () => {
                   
                   <div 
                     className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${selectedPaymentMethod === 'moov' ? 'border-ruche-gold bg-ruche-gold/5' : 'border-border hover:border-ruche-gold/50'}`}
-                    onClick={() => setSelectedPaymentMethod('moov')}
+                    onClick={() => handleSelectPaymentMethod('moov')}
                   >
                     <Phone className={`h-6 w-6 ${selectedPaymentMethod === 'moov' ? 'text-ruche-gold' : 'text-muted-foreground'}`} />
                     <div>
@@ -274,7 +321,7 @@ const Checkout = () => {
                   
                   <div 
                     className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${selectedPaymentMethod === 'visa' ? 'border-ruche-gold bg-ruche-gold/5' : 'border-border hover:border-ruche-gold/50'}`}
-                    onClick={() => setSelectedPaymentMethod('visa')}
+                    onClick={() => handleSelectPaymentMethod('visa')}
                   >
                     <CreditCard className={`h-6 w-6 ${selectedPaymentMethod === 'visa' ? 'text-ruche-gold' : 'text-muted-foreground'}`} />
                     <div>
@@ -285,7 +332,7 @@ const Checkout = () => {
                   
                   <div 
                     className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${selectedPaymentMethod === 'paypal' ? 'border-ruche-gold bg-ruche-gold/5' : 'border-border hover:border-ruche-gold/50'}`}
-                    onClick={() => setSelectedPaymentMethod('paypal')}
+                    onClick={() => handleSelectPaymentMethod('paypal')}
                   >
                     <Globe className={`h-6 w-6 ${selectedPaymentMethod === 'paypal' ? 'text-ruche-gold' : 'text-muted-foreground'}`} />
                     <div>
