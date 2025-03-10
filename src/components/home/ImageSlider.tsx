@@ -50,11 +50,19 @@ export const ImageSlider = () => {
       {sliderImages.map((image, index) => (
         <div
           key={index}
-          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${
+          className={`absolute inset-0 transition-opacity duration-1000 ${
             index === currentIndex ? 'opacity-100' : 'opacity-0'
           }`}
-          style={{ backgroundImage: `url(${image})` }}
-        />
+        >
+          <div 
+            className="w-full h-full bg-cover bg-center bg-no-repeat"
+            style={{ 
+              backgroundImage: `url(${image})`,
+              backgroundPosition: '50% 20%', // Ajusté pour mieux cadrer les visages
+              backgroundSize: 'cover'
+            }}
+          />
+        </div>
       ))}
       
       {/* Contrôles de navigation */}
