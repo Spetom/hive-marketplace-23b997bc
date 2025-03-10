@@ -37,7 +37,7 @@ const CartButton = () => {
             onClick={toggleCart}
           ></div>
           <div className="absolute right-0 mt-2 z-50 w-80 sm:w-96">
-            <Cart onClose={toggleCart} />
+            <Cart />
           </div>
         </>
       )}
