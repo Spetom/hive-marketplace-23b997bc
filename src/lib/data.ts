@@ -1,4 +1,9 @@
 
+// Function to generate image URLs for products without specific images
+const generateImageUrl = (index: number): string => {
+  return `https://source.unsplash.com/random/300x300?product&sig=${index}`;
+};
+
 export interface Product {
   id: string;
   name: string;
@@ -168,11 +173,6 @@ export const products: Product[] = [
     featured: false
   }
 ];
-
-// Images placeholder pour les produits sans images spécifiques
-const generateImageUrl = (index: number): string => {
-  return `https://source.unsplash.com/random/300x300?product&sig=${index}`;
-};
 
 export const categories = [
   { id: "electronique", name: "Électronique", count: products.filter(p => p.category === "electronique").length },
