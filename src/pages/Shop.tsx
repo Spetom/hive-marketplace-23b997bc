@@ -14,32 +14,47 @@ import { Product } from '@/lib/data';
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get('category');
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [priceRange, setPriceRange] = useState([0, 300]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     categoryParam ? [categoryParam] : []
   );
   const [inStockOnly, setInStockOnly] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Charger les produits depuis localStorage
   useEffect(() => {
-    const storedProducts = localStorage.getItem('adminProducts');
-    if (storedProducts) {
-      try {
-        const parsedProducts = JSON.parse(storedProducts);
-        setProducts(parsedProducts);
-      } catch (error) {
-        console.error("Erreur lors du chargement des produits depuis localStorage:", error);
+    setIsLoading(true);
+    
+    // Fonction pour initialiser les produits
+    const initializeProducts = () => {
+      const storedProducts = localStorage.getItem('adminProducts');
+      if (storedProducts) {
+        try {
+          const parsedProducts = JSON.parse(storedProducts);
+          setProducts(parsedProducts);
+        } catch (error) {
+          console.error("Erreur lors du chargement des produits depuis localStorage:", error);
+          setProducts(initialProducts);
+        }
+      } else {
         setProducts(initialProducts);
       }
-    } else {
-      setProducts(initialProducts);
-    }
+      
+      setIsLoading(false);
+    };
+    
+    initializeProducts();
   }, []);
   
   useEffect(() => {
+    // Ne pas filtrer les produits si la liste est vide (chargement initial)
+    if (products.length === 0 && isLoading) {
+      return;
+    }
+    
     // Filtrer les produits en fonction des critères
     let result = [...products];
     
@@ -69,7 +84,7 @@ const Shop = () => {
     }
     
     setFilteredProducts(result);
-  }, [searchQuery, selectedCategories, priceRange, inStockOnly, products]);
+  }, [searchQuery, selectedCategories, priceRange, inStockOnly, products, isLoading]);
   
   // Mise à jour de l'URL lorsque les catégories changent
   useEffect(() => {

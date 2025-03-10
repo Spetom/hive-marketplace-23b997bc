@@ -15,8 +15,8 @@ interface ProductGridProps {
 const ProductGrid = ({ products: initialProducts, title, showFilters = false }: ProductGridProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [loading, setLoading] = useState(true);
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   
   // Load products from localStorage if available
   useEffect(() => {
@@ -36,7 +36,7 @@ const ProductGrid = ({ products: initialProducts, title, showFilters = false }: 
     // Simulate loading
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 800);
+    }, 600);
     
     return () => clearTimeout(timer);
   }, [initialProducts]);
