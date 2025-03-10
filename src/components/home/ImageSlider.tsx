@@ -51,8 +51,8 @@ export const ImageSlider = () => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Overlay pour l'effet de profondeur */}
-      <div className="absolute inset-0 bg-gradient-to-b from-ruche-purple/0 via-ruche-purple/0 to-ruche-purple/80 z-10"></div>
+      {/* Overlay pour l'effet de profondeur - augmenté pour améliorer la lisibilité */}
+      <div className="absolute inset-0 bg-gradient-to-b from-ruche-purple/50 via-ruche-purple/60 to-ruche-purple/90 z-10"></div>
       
       {/* Images du slider avec fondu et zoom léger */}
       {sliderImages.map((image, index) => (
@@ -79,8 +79,8 @@ export const ImageSlider = () => {
             loading={index === 0 ? "eager" : "lazy"}
           />
           
-          {/* Overlay par image pour une meilleure lisibilité du texte */}
-          <div className="absolute inset-0 bg-ruche-purple/30"></div>
+          {/* Overlay par image - opacité réduite pour une meilleure visibilité du texte */}
+          <div className="absolute inset-0 bg-ruche-purple/60"></div>
         </div>
       ))}
       
@@ -118,8 +118,8 @@ export const ImageSlider = () => {
         </button>
       </div>
       
-      {/* Effet visuel en superposition */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-ruche-purple/40 to-transparent mix-blend-soft-light"></div>
+      {/* Effet visuel en superposition - opacité réduite */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-ruche-purple/30 to-transparent mix-blend-soft-light"></div>
     </div>
   );
 };
