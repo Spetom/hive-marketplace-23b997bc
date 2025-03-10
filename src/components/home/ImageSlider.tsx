@@ -4,9 +4,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 // Images de mannequins en tenues de pagne avec fond violet
 const sliderImages = [
   "/lovable-uploads/ec250035-70f6-4b60-9bba-243d79a04594.png",
-  "/lovable-uploads/1ac13343-eaa8-410d-b6a1-2627667b0a0d.png",
-  "/lovable-uploads/f6e0747e-1013-48a9-bbb7-715083e1bda6.png",
-  "/lovable-uploads/cc2f561f-591a-4d84-a7b1-c23653a0d6be.png"
+  "/lovable-uploads/f6e0747e-1013-48a9-bbb7-715083e1bda6.png"
 ];
 
 export const ImageSlider = () => {
