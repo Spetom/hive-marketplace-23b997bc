@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import CartButton from '../shop/CartButton';
+import { ImageSlider } from './ImageSlider';
 
 const Hero = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -23,12 +24,11 @@ const Hero = () => {
         <CartButton />
       </div>
       
-      {/* Fond avec dégradé */}
-      <div className="absolute inset-0 bg-gradient-to-r from-ruche-purple to-ruche-purple-light opacity-95 z-0"></div>
+      {/* Slider d'images en arrière-plan */}
+      <div className="absolute inset-0 z-0">
+        <ImageSlider />
+      </div>
       
-      {/* Motif en arrière-plan */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0aDR2MWgtNHYtMXptMC0yaDF2NWgtMXYtNXptNiAwaDF2NWgtMXYtNXptLTExIDBoMXY1aC0xdi01em0tNiAwaDF2NWgtMXYtNXptMTIgMGg0djFoLTR2LTF6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-50 z-0"></div>
-            
       <div className="container-custom relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className={`${isVisible ? 'animate-slide-up opacity-100' : 'opacity-0'} transition-all duration-700`}>
