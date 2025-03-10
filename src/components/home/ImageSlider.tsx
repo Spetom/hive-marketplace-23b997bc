@@ -55,8 +55,8 @@ export const ImageSlider = () => {
         />
       ))}
       
-      {/* Overlay pour assombrir les images */}
-      <div className="absolute inset-0 bg-gradient-to-r from-ruche-purple to-ruche-purple-light opacity-85 z-0"></div>
+      {/* Overlay pour assombrir légèrement les images */}
+      <div className="absolute inset-0 bg-ruche-purple bg-opacity-40 z-0"></div>
       
       {/* Contrôles de navigation */}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 flex items-center space-x-2">
