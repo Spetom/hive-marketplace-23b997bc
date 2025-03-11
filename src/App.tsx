@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
 import CartButton from "./components/shop/CartButton";
 import Index from "./pages/Index";
@@ -15,7 +15,15 @@ import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import QuickFooter from "./components/layout/QuickFooter";
 
-const queryClient = new QueryClient();
+// Create a new query client instance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>

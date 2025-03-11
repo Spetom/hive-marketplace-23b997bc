@@ -30,28 +30,33 @@ const Shop = () => {
     
     // Fonction pour initialiser les produits
     const initializeProducts = () => {
-      const storedProducts = localStorage.getItem('adminProducts');
-      if (storedProducts) {
-        try {
+      try {
+        const storedProducts = localStorage.getItem('adminProducts');
+        if (storedProducts) {
           const parsedProducts = JSON.parse(storedProducts);
           setProducts(parsedProducts);
-        } catch (error) {
-          console.error("Erreur lors du chargement des produits depuis localStorage:", error);
+        } else {
           setProducts(initialProducts);
         }
-      } else {
+      } catch (error) {
+        console.error("Erreur lors du chargement des produits depuis localStorage:", error);
         setProducts(initialProducts);
+      } finally {
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
     };
     
-    initializeProducts();
+    // Add a short delay to prevent hydration issues
+    const timer = setTimeout(() => {
+      initializeProducts();
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
   
   useEffect(() => {
     // Ne pas filtrer les produits si la liste est vide (chargement initial)
-    if (products.length === 0 && isLoading) {
+    if (isLoading) {
       return;
     }
     
