@@ -24,31 +24,14 @@ const ProductGrid = ({ products: initialProducts, title, showFilters = false }: 
     if (storedProducts) {
       try {
         const parsedProducts = JSON.parse(storedProducts);
-        // Filter out products with placeholder or unsplash generated images
-        const productsWithImages = parsedProducts.filter(
-          (product: Product) => 
-            !product.image.includes('unsplash.com/random') && 
-            !product.image.includes('placeholder')
-        );
-        setProducts(productsWithImages);
+        // Afficher tous les produits, même ceux avec des images génériques
+        setProducts(parsedProducts);
       } catch (error) {
         console.error("Erreur lors du chargement des produits depuis localStorage:", error);
-        // Filter initial products too
-        const initialProductsWithImages = initialProducts.filter(
-          product => 
-            !product.image.includes('unsplash.com/random') && 
-            !product.image.includes('placeholder')
-        );
-        setProducts(initialProductsWithImages);
+        setProducts(initialProducts);
       }
     } else {
-      // Filter initial products
-      const initialProductsWithImages = initialProducts.filter(
-        product => 
-          !product.image.includes('unsplash.com/random') && 
-          !product.image.includes('placeholder')
-      );
-      setProducts(initialProductsWithImages);
+      setProducts(initialProducts);
     }
     
     // Simulate loading
