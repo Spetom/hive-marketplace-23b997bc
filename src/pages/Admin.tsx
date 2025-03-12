@@ -11,17 +11,25 @@ import { Button } from "@/components/ui/button";
 import ProductsManager from '@/components/admin/ProductsManager';
 import AdminLogin from '@/components/admin/AdminLogin';
 import { products as initialProducts } from '@/lib/data';
+import { toast } from 'sonner';
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   // Initialize products from localStorage or fall back to initial data
   useEffect(() => {
-    // Check if products exist in localStorage
-    const storedProducts = localStorage.getItem('adminProducts');
-    if (!storedProducts) {
-      // If not, store the initial products
-      localStorage.setItem('adminProducts', JSON.stringify(initialProducts));
+    try {
+      // Check if products exist in localStorage
+      const storedProducts = localStorage.getItem('adminProducts');
+      if (!storedProducts) {
+        // If not, store the initial products
+        localStorage.setItem('adminProducts', JSON.stringify(initialProducts));
+      }
+    } catch (error) {
+      console.error("Erreur d'initialisation des produits:", error);
+      toast.error("Erreur lors de l'initialisation des produits", {
+        description: "Veuillez rafraîchir la page"
+      });
     }
   }, []);
   

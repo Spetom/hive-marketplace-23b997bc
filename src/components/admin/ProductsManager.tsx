@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Product, products as initialProducts, categories } from '@/lib/data';
 import { Button } from '@/components/ui/button';
@@ -62,50 +61,69 @@ const ProductsManager = () => {
 
   // Load products from localStorage on component mount
   useEffect(() => {
-    const storedProducts = localStorage.getItem('adminProducts');
-    if (storedProducts) {
-      setProductsList(JSON.parse(storedProducts));
-    } else {
+    try {
+      const storedProducts = localStorage.getItem('adminProducts');
+      if (storedProducts) {
+        setProductsList(JSON.parse(storedProducts));
+      } else {
+        setProductsList(initialProducts);
+        localStorage.setItem('adminProducts', JSON.stringify(initialProducts));
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement des produits:", error);
       setProductsList(initialProducts);
-      localStorage.setItem('adminProducts', JSON.stringify(initialProducts));
     }
   }, []);
 
   // Update localStorage whenever products change
   useEffect(() => {
     if (productsList.length > 0) {
-      localStorage.setItem('adminProducts', JSON.stringify(productsList));
+      try {
+        localStorage.setItem('adminProducts', JSON.stringify(productsList));
+      } catch (error) {
+        console.error("Erreur lors de la sauvegarde des produits:", error);
+      }
     }
   }, [productsList]);
 
-  // Auto-save implementation
+  // Auto-save implementation with safeguards
   useEffect(() => {
     if (!isDialogOpen || !autoSaveEnabled || !unsavedChanges) return;
     
+    // Validation de base pour éviter les sauvegardes de données incorrectes
+    if (!tempProduct.name || tempProduct.price < 0) return;
+    
     const autoSaveTimer = setTimeout(() => {
-      if (isCreating) {
-        const updatedProducts = [...productsList, tempProduct];
-        setProductsList(updatedProducts);
-        localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
-        setUnsavedChanges(false);
-        toast.success(`Produit "${tempProduct.name}" automatiquement sauvegardé`, {
-          description: "Modifications enregistrées",
-          icon: <Save className="h-4 w-4" />
-        });
-      } else if (editingProduct) {
-        const updatedProducts = productsList.map(p => p.id === tempProduct.id ? tempProduct : p);
-        setProductsList(updatedProducts);
-        localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
-        setUnsavedChanges(false);
-        toast.success(`Produit "${tempProduct.name}" automatiquement mis à jour`, {
-          description: "Modifications enregistrées",
-          icon: <Save className="h-4 w-4" />
+      try {
+        if (isCreating) {
+          const updatedProducts = [...productsList, tempProduct];
+          setProductsList(updatedProducts);
+          localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
+          setUnsavedChanges(false);
+          toast.success(`Produit "${tempProduct.name}" automatiquement sauvegardé`, {
+            description: "Modifications enregistrées",
+            icon: <Save className="h-4 w-4" />
+          });
+        } else if (editingProduct) {
+          const updatedProducts = productsList.map(p => p.id === tempProduct.id ? tempProduct : p);
+          setProductsList(updatedProducts);
+          localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
+          setUnsavedChanges(false);
+          toast.success(`Produit "${tempProduct.name}" automatiquement mis à jour`, {
+            description: "Modifications enregistrées",
+            icon: <Save className="h-4 w-4" />
+          });
+        }
+      } catch (error) {
+        console.error("Erreur lors de la sauvegarde automatique:", error);
+        toast.error("Erreur lors de la sauvegarde automatique", {
+          description: "Veuillez réessayer manuellement"
         });
       }
     }, 2000); // 2 secondes de délai pour l'auto-sauvegarde
     
     return () => clearTimeout(autoSaveTimer);
-  }, [tempProduct, isDialogOpen, autoSaveEnabled, unsavedChanges]);
+  }, [tempProduct, isDialogOpen, autoSaveEnabled, unsavedChanges, isCreating, editingProduct, productsList]);
 
   const filteredProducts = productsList.filter(product => 
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -269,6 +287,9 @@ const ProductsManager = () => {
                       src={product.image} 
                       alt={product.name}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://placehold.co/300x300?text=Image';
+                      }}
                     />
                   </div>
                 </TableCell>
@@ -331,7 +352,15 @@ const ProductsManager = () => {
         </Table>
       </div>
       
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={(open) => {
+        if (!open && unsavedChanges && !autoSaveEnabled) {
+          if (confirm("Vous avez des modifications non enregistrées. Voulez-vous vraiment fermer ?")) {
+            setIsDialogOpen(false);
+          }
+        } else {
+          setIsDialogOpen(open);
+        }
+      }}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>
@@ -400,7 +429,7 @@ const ProductsManager = () => {
                   id="price" 
                   type="number" 
                   value={tempProduct.price} 
-                  onChange={(e) => handleTempProductChange({...tempProduct, price: parseFloat(e.target.value)})}
+                  onChange={(e) => handleTempProductChange({...tempProduct, price: parseFloat(e.target.value) || 0})}
                   placeholder="Prix"
                   step="0.01"
                   min="0"
@@ -467,6 +496,9 @@ const ProductsManager = () => {
                       src={tempProduct.image} 
                       alt="Aperçu" 
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://placehold.co/300x300?text=Aperçu';
+                      }}
                     />
                   ) : (
                     <div className="text-center">
