@@ -45,6 +45,8 @@ const ProductsManager = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
 
   const [tempProduct, setTempProduct] = useState<Product>({
     id: '',
@@ -76,6 +78,35 @@ const ProductsManager = () => {
     }
   }, [productsList]);
 
+  // Auto-save implementation
+  useEffect(() => {
+    if (!isDialogOpen || !autoSaveEnabled || !unsavedChanges) return;
+    
+    const autoSaveTimer = setTimeout(() => {
+      if (isCreating) {
+        const updatedProducts = [...productsList, tempProduct];
+        setProductsList(updatedProducts);
+        localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
+        setUnsavedChanges(false);
+        toast.success(`Produit "${tempProduct.name}" automatiquement sauvegardé`, {
+          description: "Modifications enregistrées",
+          icon: <Save className="h-4 w-4" />
+        });
+      } else if (editingProduct) {
+        const updatedProducts = productsList.map(p => p.id === tempProduct.id ? tempProduct : p);
+        setProductsList(updatedProducts);
+        localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
+        setUnsavedChanges(false);
+        toast.success(`Produit "${tempProduct.name}" automatiquement mis à jour`, {
+          description: "Modifications enregistrées",
+          icon: <Save className="h-4 w-4" />
+        });
+      }
+    }, 2000); // 2 secondes de délai pour l'auto-sauvegarde
+    
+    return () => clearTimeout(autoSaveTimer);
+  }, [tempProduct, isDialogOpen, autoSaveEnabled, unsavedChanges]);
+
   const filteredProducts = productsList.filter(product => 
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -84,6 +115,7 @@ const ProductsManager = () => {
     setEditingProduct(product);
     setTempProduct({...product});
     setIsCreating(false);
+    setUnsavedChanges(false);
     setIsDialogOpen(true);
   };
 
@@ -121,7 +153,13 @@ const ProductsManager = () => {
       featured: false
     });
     setIsCreating(true);
+    setUnsavedChanges(false);
     setIsDialogOpen(true);
+  };
+
+  const handleTempProductChange = (updatedTempProduct: Product) => {
+    setTempProduct(updatedTempProduct);
+    setUnsavedChanges(true);
   };
 
   const saveProduct = () => {
@@ -131,20 +169,21 @@ const ProductsManager = () => {
       updatedProducts = [...productsList, tempProduct];
       setProductsList(updatedProducts);
       toast.success(`Produit "${tempProduct.name}" créé`, {
-        description: "Les modifications ont été enregistrées automatiquement.",
+        description: "Les modifications ont été enregistrées.",
         icon: <Save className="h-4 w-4" />
       });
     } else {
       updatedProducts = productsList.map(p => p.id === tempProduct.id ? tempProduct : p);
       setProductsList(updatedProducts);
       toast.success(`Produit "${tempProduct.name}" mis à jour`, {
-        description: "Les modifications ont été enregistrées automatiquement.",
+        description: "Les modifications ont été enregistrées.",
         icon: <Save className="h-4 w-4" />
       });
     }
     
     // Save to localStorage
     localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
+    setUnsavedChanges(false);
     setIsDialogOpen(false);
   };
 
@@ -300,8 +339,29 @@ const ProductsManager = () => {
             </DialogTitle>
             <DialogDescription>
               Remplissez les informations du produit ci-dessous.
+              {autoSaveEnabled && (
+                <span className="text-green-600 ml-2">
+                  Sauvegarde automatique activée
+                </span>
+              )}
             </DialogDescription>
           </DialogHeader>
+          
+          <div className="flex items-center mb-4">
+            <Checkbox 
+              id="autoSave" 
+              checked={autoSaveEnabled}
+              onCheckedChange={(checked) => setAutoSaveEnabled(!!checked)}
+            />
+            <Label htmlFor="autoSave" className="ml-2 cursor-pointer">
+              Sauvegarde automatique
+            </Label>
+            {unsavedChanges && !autoSaveEnabled && (
+              <span className="ml-auto text-amber-600 text-sm">
+                Modifications non enregistrées
+              </span>
+            )}
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
             <div className="space-y-4">
@@ -310,7 +370,7 @@ const ProductsManager = () => {
                 <Input 
                   id="name" 
                   value={tempProduct.name} 
-                  onChange={(e) => setTempProduct({...tempProduct, name: e.target.value})}
+                  onChange={(e) => handleTempProductChange({...tempProduct, name: e.target.value})}
                   placeholder="Nom du produit"
                 />
               </div>
@@ -319,7 +379,7 @@ const ProductsManager = () => {
                 <Label htmlFor="category">Catégorie</Label>
                 <Select 
                   value={tempProduct.category}
-                  onValueChange={(value) => setTempProduct({...tempProduct, category: value})}
+                  onValueChange={(value) => handleTempProductChange({...tempProduct, category: value})}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner une catégorie" />
@@ -340,7 +400,7 @@ const ProductsManager = () => {
                   id="price" 
                   type="number" 
                   value={tempProduct.price} 
-                  onChange={(e) => setTempProduct({...tempProduct, price: parseFloat(e.target.value)})}
+                  onChange={(e) => handleTempProductChange({...tempProduct, price: parseFloat(e.target.value)})}
                   placeholder="Prix"
                   step="0.01"
                   min="0"
@@ -353,7 +413,7 @@ const ProductsManager = () => {
                   id="discountPrice" 
                   type="number" 
                   value={tempProduct.discountPrice || ''} 
-                  onChange={(e) => setTempProduct({
+                  onChange={(e) => handleTempProductChange({
                     ...tempProduct, 
                     discountPrice: e.target.value ? parseFloat(e.target.value) : undefined
                   })}
@@ -368,7 +428,7 @@ const ProductsManager = () => {
                   id="inStock" 
                   checked={tempProduct.inStock}
                   onCheckedChange={(checked) => 
-                    setTempProduct({...tempProduct, inStock: checked as boolean})
+                    handleTempProductChange({...tempProduct, inStock: checked as boolean})
                   }
                 />
                 <Label htmlFor="inStock">En stock</Label>
@@ -379,7 +439,7 @@ const ProductsManager = () => {
                   id="featured" 
                   checked={tempProduct.featured}
                   onCheckedChange={(checked) => 
-                    setTempProduct({...tempProduct, featured: checked as boolean})
+                    handleTempProductChange({...tempProduct, featured: checked as boolean})
                   }
                 />
                 <Label htmlFor="featured">Mettre en avant</Label>
@@ -393,7 +453,7 @@ const ProductsManager = () => {
                   <Input 
                     id="image" 
                     value={tempProduct.image} 
-                    onChange={(e) => setTempProduct({...tempProduct, image: e.target.value})}
+                    onChange={(e) => handleTempProductChange({...tempProduct, image: e.target.value})}
                     placeholder="URL de l'image"
                     className="flex-1"
                   />
@@ -424,7 +484,7 @@ const ProductsManager = () => {
                 <Textarea
                   id="description"
                   value={tempProduct.description}
-                  onChange={(e) => setTempProduct({...tempProduct, description: e.target.value})}
+                  onChange={(e) => handleTempProductChange({...tempProduct, description: e.target.value})}
                   placeholder="Description du produit"
                   rows={4}
                 />
