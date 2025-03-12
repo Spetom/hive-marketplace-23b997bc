@@ -59,7 +59,6 @@ const ProductsManager = () => {
     featured: false
   });
 
-  // Load products from localStorage on component mount
   useEffect(() => {
     try {
       const storedProducts = localStorage.getItem('adminProducts');
@@ -75,7 +74,6 @@ const ProductsManager = () => {
     }
   }, []);
 
-  // Update localStorage whenever products change
   useEffect(() => {
     if (productsList.length > 0) {
       try {
@@ -86,11 +84,9 @@ const ProductsManager = () => {
     }
   }, [productsList]);
 
-  // Auto-save implementation with safeguards
   useEffect(() => {
     if (!isDialogOpen || !autoSaveEnabled || !unsavedChanges) return;
     
-    // Validation de base pour éviter les sauvegardes de données incorrectes
     if (!tempProduct.name || tempProduct.price < 0) return;
     
     const autoSaveTimer = setTimeout(() => {
@@ -120,7 +116,7 @@ const ProductsManager = () => {
           description: "Veuillez réessayer manuellement"
         });
       }
-    }, 2000); // 2 secondes de délai pour l'auto-sauvegarde
+    }, 2000);
     
     return () => clearTimeout(autoSaveTimer);
   }, [tempProduct, isDialogOpen, autoSaveEnabled, unsavedChanges, isCreating, editingProduct, productsList]);
@@ -159,8 +155,9 @@ const ProductsManager = () => {
 
   const handleCreateProduct = () => {
     setEditingProduct(null);
+    const newId = `new-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     setTempProduct({
-      id: Math.random().toString(36).substring(2, 9),
+      id: newId,
       name: '',
       category: 'electronique',
       price: 0,
@@ -181,11 +178,31 @@ const ProductsManager = () => {
   };
 
   const saveProduct = () => {
+    if (!tempProduct.name || tempProduct.name.trim() === '') {
+      toast.error("Le nom du produit est requis");
+      return;
+    }
+
+    if (isNaN(tempProduct.price) || tempProduct.price < 0) {
+      toast.error("Le prix doit être un nombre positif");
+      return;
+    }
+
     let updatedProducts;
     
     if (isCreating) {
-      updatedProducts = [...productsList, tempProduct];
+      if (productsList.some(p => p.id === tempProduct.id)) {
+        const newProduct = {
+          ...tempProduct,
+          id: `new-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+        };
+        updatedProducts = [...productsList, newProduct];
+      } else {
+        updatedProducts = [...productsList, tempProduct];
+      }
+
       setProductsList(updatedProducts);
+      
       toast.success(`Produit "${tempProduct.name}" créé`, {
         description: "Les modifications ont été enregistrées.",
         icon: <Save className="h-4 w-4" />
@@ -193,13 +210,13 @@ const ProductsManager = () => {
     } else {
       updatedProducts = productsList.map(p => p.id === tempProduct.id ? tempProduct : p);
       setProductsList(updatedProducts);
+      
       toast.success(`Produit "${tempProduct.name}" mis à jour`, {
         description: "Les modifications ont été enregistrées.",
         icon: <Save className="h-4 w-4" />
       });
     }
     
-    // Save to localStorage
     localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
     setUnsavedChanges(false);
     setIsDialogOpen(false);
