@@ -15,7 +15,7 @@ const Index = () => {
     <>
       <Helmet>
         <title>LA RUCHE D'OR - Boutique en ligne</title>
-        <meta name="description" content="La Ruche d'Or - Une entreprise béninoise spécialisée dans la vente de tout types d'articles de qualité." />
+        <meta name="description" content="La Ruche d'Or - Une entreprise béninoise spécialisée dans le prêt-à-porter et multitude-services de qualité." />
       </Helmet>
       
       <div className="min-h-screen flex flex-col">
@@ -49,9 +49,12 @@ const Index = () => {
         <section className="py-24 bg-ruche-purple">
           <div className="container-custom">
             <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-white font-heading text-3xl md:text-4xl font-bold mb-6">
-                Rejoignez notre communauté de clients satisfaits
+              <h2 className="text-white font-heading text-2xl md:text-3xl italic font-bold mb-4">
+                "L'or du style, miel de l'élégance"
               </h2>
+              <h3 className="text-white font-heading text-2xl md:text-3xl font-bold mb-6">
+                Rejoignez notre communauté de clients satisfaits
+              </h3>
               <p className="text-white/80 text-lg mb-8">
                 Inscrivez-vous à notre newsletter pour recevoir les dernières actualités et offres exclusives.
               </p>

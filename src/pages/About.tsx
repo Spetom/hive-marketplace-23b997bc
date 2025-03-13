@@ -9,7 +9,7 @@ const About = () => {
     <>
       <Helmet>
         <title>À propos - LA RUCHE D'OR</title>
-        <meta name="description" content="Découvrez l'histoire et les valeurs de La Ruche d'Or, une entreprise béninoise spécialisée dans la vente de produits de qualité." />
+        <meta name="description" content="Découvrez l'histoire et les valeurs de La Ruche d'Or, une entreprise béninoise spécialisée dans le prêt-à-porter et multitude-services." />
       </Helmet>
       
       <div className="min-h-screen bg-muted/30">
@@ -31,6 +31,9 @@ const About = () => {
             <p className="text-muted-foreground text-lg max-w-3xl">
               Découvrez notre histoire, notre mission et les valeurs qui guident notre entreprise.
             </p>
+            <p className="text-ruche-gold text-xl italic mt-4">
+              "L'or du style, miel de l'élégance"
+            </p>
           </div>
           
           {/* Section Notre Histoire */}
@@ -49,7 +52,7 @@ const About = () => {
               
               <div className="space-y-6">
                 <p className="text-lg">
-                  <span className="font-semibold text-ruche-purple">LA RUCHE D'OR</span> est née d'une vision audacieuse : créer une entreprise béninoise qui incarne l'excellence et l'innovation dans la distribution de produits de qualité.
+                  <span className="font-semibold text-ruche-purple">LA RUCHE D'OR</span> est née d'une vision audacieuse : créer une entreprise béninoise qui incarne l'excellence et l'innovation dans le prêt-à-porter et les multitude-services.
                 </p>
                 
                 <p>
@@ -74,8 +77,8 @@ const About = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-muted/50 p-6 rounded-lg hover-lift">
-                  <h3 className="text-xl font-semibold text-ruche-purple mb-3">Qualité Irréprochable</h3>
-                  <p>Proposer uniquement des produits de qualité supérieure, sélectionnés avec soin pour garantir une satisfaction totale.</p>
+                  <h3 className="text-xl font-semibold text-ruche-purple mb-3">Prêt-à-porter de Qualité</h3>
+                  <p>Proposer uniquement des vêtements et accessoires de qualité supérieure, sélectionnés avec soin pour garantir style et élégance.</p>
                 </div>
                 
                 <div className="bg-muted/50 p-6 rounded-lg hover-lift">
@@ -84,8 +87,8 @@ const About = () => {
                 </div>
                 
                 <div className="bg-muted/50 p-6 rounded-lg hover-lift">
-                  <h3 className="text-xl font-semibold text-ruche-purple mb-3">Innovation Constante</h3>
-                  <p>Innover continuellement dans notre offre et nos processus pour rester à la pointe des attentes du marché.</p>
+                  <h3 className="text-xl font-semibold text-ruche-purple mb-3">Multitude-services</h3>
+                  <p>Étendre notre expertise au-delà du prêt-à-porter pour répondre à divers besoins de notre clientèle avec la même excellence.</p>
                 </div>
               </div>
             </div>

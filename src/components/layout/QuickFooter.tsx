@@ -1,17 +1,24 @@
 
 import { Link } from 'react-router-dom';
-import { Mail, Phone, Clock, MapPin, Instagram, Facebook, Twitter } from 'lucide-react';
+import { Mail, Phone, Clock, MapPin, Instagram, Facebook, Twitter, MessageCircle } from 'lucide-react';
 
 const QuickFooter = () => {
   return (
     <footer className="bg-ruche-purple text-white pt-16 pb-8">
       <div className="container-custom">
+        {/* Slogan de l'entreprise */}
+        <div className="text-center mb-12">
+          <h2 className="font-heading text-2xl md:text-3xl text-ruche-gold italic">
+            "L'or du style, miel de l'élégance"
+          </h2>
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           {/* À propos */}
           <div>
             <h3 className="font-heading text-xl font-semibold mb-4 text-ruche-gold">À propos</h3>
             <p className="text-white/80 mb-4">
-              La Ruche d'Or est une entreprise béninoise spécialisée dans la vente de produits de qualité pour toute la famille.
+              La Ruche d'Or est une entreprise béninoise spécialisée dans le prêt-à-porter et multitude-services pour toute la famille.
             </p>
             <div className="flex space-x-4">
               <a href="https://instagram.com" className="text-white/80 hover:text-ruche-gold transition-colors" aria-label="Instagram">
@@ -54,11 +61,15 @@ const QuickFooter = () => {
             <ul className="space-y-3">
               <li className="flex items-start">
                 <MapPin size={18} className="mr-2 mt-1 text-ruche-gold/80" />
-                <span className="text-white/80">123 Rue du Commerce, Cotonou, Bénin</span>
+                <span className="text-white/80">Tokpota maison Assogba, Cotonou, Bénin</span>
               </li>
               <li className="flex items-center">
                 <Phone size={18} className="mr-2 text-ruche-gold/80" />
-                <a href="tel:+22900000000" className="text-white/80 hover:text-ruche-gold transition-colors">+229 00 00 00 00</a>
+                <a href="tel:+22997050090" className="text-white/80 hover:text-ruche-gold transition-colors">+229 97 05 00 90</a>
+              </li>
+              <li className="flex items-center">
+                <MessageCircle size={18} className="mr-2 text-ruche-gold/80" />
+                <a href="https://wa.me/22951745951" className="text-white/80 hover:text-ruche-gold transition-colors">WhatsApp: +229 51 74 59 51</a>
               </li>
               <li className="flex items-center">
                 <Mail size={18} className="mr-2 text-ruche-gold/80" />
