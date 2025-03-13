@@ -37,7 +37,7 @@ const Hero = () => {
               <span className="text-ruche-gold">LA RUCHE D'OR</span>
             </h1>
             <p className="text-white/90 text-lg md:text-xl mb-8 max-w-lg">
-              Votre destination privilégiée pour des produits de qualité supérieure. Parcourez notre catalogue et trouvez ce qui vous convient.
+              Votre destination privilégiée pour le prêt-à-porter de qualité et multitude-services. Parcourez notre catalogue et trouvez ce qui vous convient.
             </p>
             <div className="flex flex-wrap gap-4">
               <Button
@@ -46,7 +46,7 @@ const Hero = () => {
                 className="bg-ruche-gold hover:bg-ruche-gold-light text-ruche-purple font-medium transition-all duration-300 shadow-xl hover:shadow-ruche-gold/20 px-6"
               >
                 <Link to="/shop">
-                  Explorer la boutique
+                  Découvrir le prêt-à-porter
                   <ArrowRight size={18} className="ml-2" />
                 </Link>
               </Button>
@@ -56,8 +56,8 @@ const Hero = () => {
                 size="lg"
                 className="border-white text-white bg-ruche-purple hover:bg-ruche-purple-light hover:text-white transition-all duration-300 px-6"
               >
-                <Link to="/about">
-                  En savoir plus
+                <Link to="/shop" onClick={() => localStorage.setItem('activeShopTab', 'services')}>
+                  Nos services
                 </Link>
               </Button>
             </div>

@@ -41,16 +41,16 @@ const QuickFooter = () => {
                 <Link to="/" className="text-white/80 hover:text-ruche-gold transition-colors">Accueil</Link>
               </li>
               <li>
-                <Link to="/shop" className="text-white/80 hover:text-ruche-gold transition-colors">Boutique</Link>
+                <Link to="/shop" className="text-white/80 hover:text-ruche-gold transition-colors">Prêt-à-porter</Link>
+              </li>
+              <li>
+                <Link to="/shop" onClick={() => localStorage.setItem('activeShopTab', 'services')} className="text-white/80 hover:text-ruche-gold transition-colors">Services</Link>
               </li>
               <li>
                 <Link to="/about" className="text-white/80 hover:text-ruche-gold transition-colors">À propos</Link>
               </li>
               <li>
                 <a href="#" className="text-white/80 hover:text-ruche-gold transition-colors">Conditions générales</a>
-              </li>
-              <li>
-                <a href="#" className="text-white/80 hover:text-ruche-gold transition-colors">Politique de confidentialité</a>
               </li>
             </ul>
           </div>
