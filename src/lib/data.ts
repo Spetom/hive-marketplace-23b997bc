@@ -1,4 +1,3 @@
-
 // Function to generate image URLs for products without specific images
 const generateImageUrl = (index: number): string => {
   return `https://source.unsplash.com/random/300x300?african,fabric&sig=${index}`;
@@ -75,16 +74,6 @@ export const products: Product[] = [
     inStock: true
   },
   {
-    id: "6",
-    name: "Ensemble décoratif mural africain",
-    category: "maison",
-    price: 79.99,
-    image: generateImageUrl(6),
-    description: "Superbe ensemble de décoration murale inspiré des motifs traditionnels africains.",
-    rating: 4.4,
-    inStock: true
-  },
-  {
     id: "7",
     name: "T-shirt La Ruche d'Or motifs adinkra",
     category: "mode",
@@ -94,16 +83,6 @@ export const products: Product[] = [
     rating: 4.6,
     inStock: true,
     featured: true
-  },
-  {
-    id: "8",
-    name: "Parfum Élégance Dorée aux notes africaines",
-    category: "beaute",
-    price: 79.99,
-    image: generateImageUrl(8),
-    description: "Un parfum captivant avec des notes florales et boisées inspirées des senteurs africaines.",
-    rating: 4.8,
-    inStock: true
   },
   {
     id: "9",
@@ -128,16 +107,6 @@ export const products: Product[] = [
     featured: true
   },
   {
-    id: "11",
-    name: "Lampe en calebasse sculptée",
-    category: "maison",
-    price: 89.99,
-    image: generateImageUrl(11),
-    description: "Lampe artisanale fabriquée à partir de calebasse sculptée avec motifs traditionnels africains.",
-    rating: 4.7,
-    inStock: true
-  },
-  {
     id: "12",
     name: "Sweatshirt motifs bogolan",
     category: "mode",
@@ -160,25 +129,12 @@ export const products: Product[] = [
     rating: 4.9,
     inStock: true,
     featured: true
-  },
-  {
-    id: "14",
-    name: "Crème hydratante au beurre de karité",
-    category: "beaute",
-    price: 39.99,
-    image: generateImageUrl(14),
-    description: "Crème naturelle au beurre de karité pur du Bénin, nourrissante et régénérante pour la peau.",
-    rating: 4.6,
-    inStock: true,
-    featured: false
   }
 ];
 
 export const categories = [
   { id: "mode", name: "Vêtements", count: products.filter(p => p.category === "mode").length },
-  { id: "tissus", name: "Tissus & Pagnes", count: products.filter(p => p.category === "tissus").length },
-  { id: "maison", name: "Maison", count: products.filter(p => p.category === "maison").length },
-  { id: "beaute", name: "Beauté & Santé", count: products.filter(p => p.category === "beaute").length }
+  { id: "tissus", name: "Tissus & Pagnes", count: products.filter(p => p.category === "tissus").length }
 ];
 
 // Liste des pays pour le formulaire de livraison

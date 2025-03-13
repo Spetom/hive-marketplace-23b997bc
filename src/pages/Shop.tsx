@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductGrid from '@/components/shop/ProductGrid';
@@ -42,7 +43,11 @@ const Shop = () => {
         const storedProducts = localStorage.getItem('adminProducts');
         if (storedProducts) {
           const parsedProducts = JSON.parse(storedProducts);
-          setProducts(parsedProducts);
+          // Filter out products that are not mode or tissus categories
+          const filteredProducts = parsedProducts.filter(
+            (product: Product) => product.category === "mode" || product.category === "tissus"
+          );
+          setProducts(filteredProducts);
         } else {
           setProducts(initialProducts);
         }
