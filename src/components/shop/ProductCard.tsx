@@ -30,6 +30,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
     setIsFavorite(!isFavorite);
   };
   
+  // Conversion Euro to FCFA (1 EUR = 655.957 FCFA)
+  const euroToFCFA = (euroPrice: number): number => {
+    return Math.round(euroPrice * 655.957);
+  };
+  
   return (
     <Card 
       className="overflow-hidden border border-border hover:border-ruche-gold transition-all duration-300 hover:shadow-lg group hover-lift"
@@ -128,11 +133,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
             <div>
               {product.discountPrice ? (
                 <div className="flex items-center gap-2">
-                  <span className="text-lg font-semibold text-ruche-purple">{product.discountPrice.toFixed(2)}€</span>
-                  <span className="text-sm text-muted-foreground line-through">{product.price.toFixed(2)}€</span>
+                  <span className="text-lg font-semibold text-ruche-purple">{euroToFCFA(product.discountPrice).toLocaleString()} FCFA</span>
+                  <span className="text-sm text-muted-foreground line-through">{euroToFCFA(product.price).toLocaleString()} FCFA</span>
                 </div>
               ) : (
-                <span className="text-lg font-semibold text-ruche-purple">{product.price.toFixed(2)}€</span>
+                <span className="text-lg font-semibold text-ruche-purple">{euroToFCFA(product.price).toLocaleString()} FCFA</span>
               )}
             </div>
             <span className={`text-xs font-medium px-2 py-0.5 rounded ${product.inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>

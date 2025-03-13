@@ -22,6 +22,11 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 
+// Conversion Euro to FCFA (1 EUR = 655.957 FCFA)
+const euroToFCFA = (euroPrice: number): number => {
+  return Math.round(euroPrice * 655.957);
+};
+
 export const Cart = () => {
   const { items, totalItems, totalPrice, removeFromCart, updateQuantity, clearCart } = useCart();
   const [isOpen, setIsOpen] = useState(false);
@@ -97,10 +102,9 @@ export const Cart = () => {
                     <h4 className="font-medium text-ruche-purple">{item.name}</h4>
                     <div className="flex justify-between items-center mt-2">
                       <p className="font-semibold">
-                        {(
+                        {euroToFCFA(
                           (item.discountPrice || item.price) * item.quantity
-                        ).toFixed(2)}
-                        €
+                        ).toLocaleString()} FCFA
                       </p>
                       <div className="flex items-center">
                         <button
@@ -141,7 +145,7 @@ export const Cart = () => {
             <div className="space-y-3 mb-6">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Sous-total</span>
-                <span className="font-medium">{totalPrice.toFixed(2)}€</span>
+                <span className="font-medium">{euroToFCFA(totalPrice).toLocaleString()} FCFA</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Livraison</span>
@@ -151,7 +155,7 @@ export const Cart = () => {
               <div className="flex justify-between">
                 <span className="font-medium text-ruche-purple">Total</span>
                 <span className="font-bold text-ruche-purple">
-                  {totalPrice.toFixed(2)}€
+                  {euroToFCFA(totalPrice).toLocaleString()} FCFA
                 </span>
               </div>
             </div>

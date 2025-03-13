@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -24,6 +23,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+const euroToFCFA = (euroPrice: number): number => {
+  return Math.round(euroPrice * 655.957);
+};
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
@@ -357,7 +360,7 @@ const Checkout = () => {
                         <p className="font-medium text-ruche-purple">{item.name}</p>
                         <p className="text-sm text-muted-foreground">Quantité: {item.quantity}</p>
                       </div>
-                      <p className="font-medium">{((item.discountPrice || item.price) * item.quantity).toFixed(2)}€</p>
+                      <p className="font-medium">{euroToFCFA((item.discountPrice || item.price) * item.quantity).toLocaleString()} FCFA</p>
                     </div>
                   ))}
                 </div>
@@ -367,7 +370,7 @@ const Checkout = () => {
                 <div className="space-y-2 mb-6">
                   <div className="flex justify-between">
                     <p className="text-muted-foreground">Sous-total</p>
-                    <p className="font-medium">{totalPrice.toFixed(2)}€</p>
+                    <p className="font-medium">{euroToFCFA(totalPrice).toLocaleString()} FCFA</p>
                   </div>
                   <div className="flex justify-between">
                     <p className="text-muted-foreground">Livraison</p>
@@ -379,7 +382,7 @@ const Checkout = () => {
                 
                 <div className="flex justify-between mb-6">
                   <p className="font-semibold text-ruche-purple">Total</p>
-                  <p className="font-bold text-lg text-ruche-purple">{totalPrice.toFixed(2)}€</p>
+                  <p className="font-bold text-lg text-ruche-purple">{euroToFCFA(totalPrice).toLocaleString()} FCFA</p>
                 </div>
                 
                 <Button 
