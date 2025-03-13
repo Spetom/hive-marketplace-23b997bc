@@ -54,7 +54,7 @@ const Hero = () => {
                 asChild
                 variant="outline"
                 size="lg"
-                className="border-white text-white bg-ruche-purple hover:bg-ruche-purple-light hover:text-white transition-all duration-300 px-6"
+                className="border-white text-white bg-transparent hover:bg-white/10 hover:text-white transition-all duration-300 px-6"
               >
                 <Link to="/shop" onClick={() => localStorage.setItem('activeShopTab', 'services')}>
                   Nos services de couture
