@@ -18,7 +18,7 @@ const QuickFooter = () => {
           <div>
             <h3 className="font-heading text-xl font-semibold mb-4 text-ruche-gold">À propos</h3>
             <p className="text-white/80 mb-4">
-              La Ruche d'Or est une entreprise béninoise spécialisée dans le prêt-à-porter et multitude-services pour toute la famille.
+              La Ruche d'Or est une entreprise béninoise spécialisée dans le prêt-à-porter africain, la confection de pagnes et les services de couture sur mesure pour toute la famille.
             </p>
             <div className="flex space-x-4">
               <a href="https://instagram.com" className="text-white/80 hover:text-ruche-gold transition-colors" aria-label="Instagram">
@@ -41,10 +41,10 @@ const QuickFooter = () => {
                 <Link to="/" className="text-white/80 hover:text-ruche-gold transition-colors">Accueil</Link>
               </li>
               <li>
-                <Link to="/shop" className="text-white/80 hover:text-ruche-gold transition-colors">Prêt-à-porter</Link>
+                <Link to="/shop" className="text-white/80 hover:text-ruche-gold transition-colors">Prêt-à-porter Africain</Link>
               </li>
               <li>
-                <Link to="/shop" onClick={() => localStorage.setItem('activeShopTab', 'services')} className="text-white/80 hover:text-ruche-gold transition-colors">Services</Link>
+                <Link to="/shop" onClick={() => localStorage.setItem('activeShopTab', 'services')} className="text-white/80 hover:text-ruche-gold transition-colors">Services de Couture</Link>
               </li>
               <li>
                 <Link to="/about" className="text-white/80 hover:text-ruche-gold transition-colors">À propos</Link>

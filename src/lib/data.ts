@@ -1,7 +1,7 @@
 
 // Function to generate image URLs for products without specific images
 const generateImageUrl = (index: number): string => {
-  return `https://source.unsplash.com/random/300x300?product&sig=${index}`;
+  return `https://source.unsplash.com/random/300x300?african,fabric&sig=${index}`;
 };
 
 export interface Product {
@@ -21,153 +21,153 @@ export interface Product {
 export const products: Product[] = [
   {
     id: "1",
-    name: "Smartphone XZ Premium",
-    category: "electronique",
-    price: 299.99,
-    discountPrice: 249.99,
+    name: "Chemise en pagne Ankara",
+    category: "mode",
+    price: 29.99,
+    discountPrice: 24.99,
     image: "/lovable-uploads/647cc294-27a3-44f3-82fd-d377923d4499.png",
-    description: "Un smartphone haut de gamme avec un appareil photo exceptionnel et une batterie longue durée.",
+    description: "Chemise élégante confectionnée en pagne Ankara aux motifs colorés traditionnels africains.",
     rating: 4.5,
     inStock: true,
     featured: true
   },
   {
     id: "2",
-    name: "Montre connectée Pulse",
-    category: "electronique",
-    price: 129.99,
+    name: "Ensemble Kente femme",
+    category: "mode",
+    price: 89.99,
     image: "/lovable-uploads/91ebc91d-b4b1-4b09-a3ba-e0f635a4bd28.png",
-    description: "Suivez votre activité physique et restez connecté avec cette montre élégante.",
-    rating: 4.2,
+    description: "Magnifique ensemble en tissu Kente avec des motifs traditionnels ghanéens, parfait pour les occasions spéciales.",
+    rating: 4.8,
     inStock: true
   },
   {
     id: "3",
-    name: "Sac à main en cuir véritable",
+    name: "Sac à main en pagne",
     category: "mode",
-    price: 159.99,
-    discountPrice: 129.99,
+    price: 49.99,
+    discountPrice: 39.99,
     image: "/lovable-uploads/dfe3fb08-8965-4e0a-8188-35a46ffa96af.png",
-    description: "Un sac à main en cuir véritable fabriqué par des artisans qualifiés.",
+    description: "Sac à main élégant confectionné en pagne africain avec finition en cuir véritable.",
     rating: 4.7,
     inStock: true,
     featured: true
   },
   {
     id: "4",
-    name: "Legging sport La Ruche d'Or",
+    name: "Legging motifs africains",
     category: "mode",
-    price: 89.99,
+    price: 39.99,
     image: "/lovable-uploads/1d2b4ed7-a506-4c06-98fc-88e28e7ce734.png",
-    description: "Legging confortable avec motif La Ruche d'Or pour tous vos entraînements.",
+    description: "Legging confortable avec motifs africains inspirés des textiles traditionnels.",
     rating: 4.3,
     inStock: true,
     featured: true
   },
   {
     id: "5",
-    name: "Mixeur électrique pro",
-    category: "maison",
+    name: "Tissu pagne Wax premium (6 yards)",
+    category: "tissus",
     price: 69.99,
     image: generateImageUrl(5),
-    description: "Préparez des smoothies et des soupes en un instant avec ce mixeur puissant.",
-    rating: 4.1,
+    description: "Tissu pagne Wax authentique de qualité supérieure, parfait pour confectionner des vêtements uniques.",
+    rating: 4.9,
     inStock: true
   },
   {
     id: "6",
-    name: "Ensemble de décoration murale",
+    name: "Ensemble décoratif mural africain",
     category: "maison",
-    price: 49.99,
+    price: 79.99,
     image: generateImageUrl(6),
-    description: "Ajoutez une touche d'élégance à votre intérieur avec cet ensemble de décoration.",
+    description: "Superbe ensemble de décoration murale inspiré des motifs traditionnels africains.",
     rating: 4.4,
     inStock: true
   },
   {
     id: "7",
-    name: "T-shirt La Ruche d'Or",
+    name: "T-shirt La Ruche d'Or motifs adinkra",
     category: "mode",
-    price: 29.99,
+    price: 19.99,
     image: "/lovable-uploads/e4118eb3-fc71-40d4-8485-25ffe9b4e6b5.png",
-    description: "T-shirt confortable avec logo La Ruche d'Or, disponible en plusieurs tailles.",
+    description: "T-shirt confortable avec logo La Ruche d'Or et motifs adinkra symbolisant la sagesse et la force.",
     rating: 4.6,
     inStock: true,
     featured: true
   },
   {
     id: "8",
-    name: "Parfum Élégance Dorée",
+    name: "Parfum Élégance Dorée aux notes africaines",
     category: "beaute",
     price: 79.99,
     image: generateImageUrl(8),
-    description: "Un parfum captivant avec des notes florales et boisées.",
+    description: "Un parfum captivant avec des notes florales et boisées inspirées des senteurs africaines.",
     rating: 4.8,
     inStock: true
   },
   {
     id: "9",
-    name: "Écouteurs sans fil Pro",
-    category: "electronique",
-    price: 99.99,
-    discountPrice: 79.99,
+    name: "Robe longue en bazin brodé",
+    category: "mode",
+    price: 129.99,
+    discountPrice: 99.99,
     image: generateImageUrl(9),
-    description: "Des écouteurs avec une qualité sonore exceptionnelle et une autonomie impressionnante.",
-    rating: 4.4,
+    description: "Magnifique robe en bazin riche avec broderies traditionnelles, idéale pour les célébrations.",
+    rating: 4.9,
     inStock: true
   },
   {
     id: "10",
-    name: "Casquette La Ruche d'Or",
+    name: "Casquette La Ruche d'Or motifs kente",
     category: "mode",
     price: 24.99,
     image: "/lovable-uploads/5044e05d-ed1e-4f1e-89a9-ccbe5762efa1.png",
-    description: "Casquette élégante avec logo La Ruche d'Or, parfaite pour toutes les saisons.",
+    description: "Casquette élégante avec logo La Ruche d'Or et accent en tissu kente, parfaite pour toutes les saisons.",
     rating: 4.5,
     inStock: true,
     featured: true
   },
   {
     id: "11",
-    name: "Lampe de bureau design",
+    name: "Lampe en calebasse sculptée",
     category: "maison",
-    price: 59.99,
+    price: 89.99,
     image: generateImageUrl(11),
-    description: "Une lampe moderne avec différents modes d'éclairage pour votre espace de travail.",
-    rating: 4.2,
+    description: "Lampe artisanale fabriquée à partir de calebasse sculptée avec motifs traditionnels africains.",
+    rating: 4.7,
     inStock: true
   },
   {
     id: "12",
-    name: "Sweatshirt La Ruche d'Or",
+    name: "Sweatshirt motifs bogolan",
     category: "mode",
     price: 49.99,
     discountPrice: 39.99,
     image: "/lovable-uploads/8c802d68-775a-4882-b7fe-3a1f44ade043.png",
-    description: "Sweatshirt confortable avec logo La Ruche d'Or, parfait pour les journées fraîches.",
+    description: "Sweatshirt confortable avec motifs bogolan du Mali, parfait pour les journées fraîches.",
     rating: 4.7,
     inStock: true,
     featured: true
   },
   {
     id: "13",
-    name: "Ordinateur portable UltraBook",
-    category: "electronique",
-    price: 899.99,
-    discountPrice: 799.99,
+    name: "Ensemble complet homme en pagne",
+    category: "mode",
+    price: 149.99,
+    discountPrice: 129.99,
     image: generateImageUrl(13),
-    description: "Un ordinateur portable ultrafin avec des performances exceptionnelles pour le travail et les loisirs.",
+    description: "Ensemble complet pour homme confectionné en pagne africain de qualité, coupe moderne et élégante.",
     rating: 4.9,
     inStock: true,
     featured: true
   },
   {
     id: "14",
-    name: "Crème anti-âge revitalisante",
+    name: "Crème hydratante au beurre de karité",
     category: "beaute",
-    price: 69.99,
+    price: 39.99,
     image: generateImageUrl(14),
-    description: "Une crème anti-âge enrichie en vitamines et en actifs naturels pour une peau visiblement plus jeune.",
+    description: "Crème naturelle au beurre de karité pur du Bénin, nourrissante et régénérante pour la peau.",
     rating: 4.6,
     inStock: true,
     featured: false
@@ -175,8 +175,8 @@ export const products: Product[] = [
 ];
 
 export const categories = [
-  { id: "electronique", name: "Électronique", count: products.filter(p => p.category === "electronique").length },
-  { id: "mode", name: "Mode", count: products.filter(p => p.category === "mode").length },
+  { id: "mode", name: "Vêtements", count: products.filter(p => p.category === "mode").length },
+  { id: "tissus", name: "Tissus & Pagnes", count: products.filter(p => p.category === "tissus").length },
   { id: "maison", name: "Maison", count: products.filter(p => p.category === "maison").length },
   { id: "beaute", name: "Beauté & Santé", count: products.filter(p => p.category === "beaute").length }
 ];

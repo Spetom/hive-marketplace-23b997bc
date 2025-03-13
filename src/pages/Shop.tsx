@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, FilterX, ShoppingBag, Briefcase } from 'lucide-react';
+import { Search, FilterX, ShoppingBag, Scissors, Briefcase } from 'lucide-react';
 import { Product } from '@/lib/data';
 
 const Shop = () => {
@@ -25,6 +25,12 @@ const Shop = () => {
   const [activeTab, setActiveTab] = useState('pret-a-porter');
   
   useEffect(() => {
+    const storedTab = localStorage.getItem('activeShopTab');
+    if (storedTab) {
+      setActiveTab(storedTab);
+      localStorage.removeItem('activeShopTab');
+    }
+    
     setIsLoading(true);
     
     const initializeProducts = () => {
@@ -116,7 +122,7 @@ const Shop = () => {
     <>
       <Helmet>
         <title>Boutique | LA RUCHE D'OR</title>
-        <meta name="description" content="Découvrez notre collection de prêt-à-porter de qualité et nos multitude-services." />
+        <meta name="description" content="Découvrez notre collection de prêt-à-porter africain, pagnes et nos services de couture sur mesure." />
       </Helmet>
       
       <div className="pt-24 pb-20">
@@ -124,7 +130,7 @@ const Shop = () => {
           <div className="mb-12 text-center">
             <h1 className="heading-1 text-ruche-purple mb-4">Notre Boutique</h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Découvrez notre collection de prêt-à-porter et nos services supplémentaires.
+              Découvrez notre collection de prêt-à-porter africain, pagnes et nos services de couture sur mesure.
             </p>
           </div>
           
@@ -136,15 +142,15 @@ const Shop = () => {
                 onClick={() => setActiveTab('pret-a-porter')}
               >
                 <ShoppingBag size={18} />
-                Prêt-à-porter
+                Prêt-à-porter Africain
               </Button>
               <Button 
                 variant={activeTab === 'services' ? 'default' : 'ghost'}
                 className={`flex items-center gap-2 ${activeTab === 'services' ? 'bg-ruche-gold text-white' : ''}`}
                 onClick={() => setActiveTab('services')}
               >
-                <Briefcase size={18} />
-                Multitude-services
+                <Scissors size={18} />
+                Services de Couture
               </Button>
             </div>
           </div>
@@ -259,20 +265,40 @@ const Shop = () => {
           ) : (
             <div className="bg-white p-8 rounded-lg border border-border">
               <div className="text-center mb-8">
-                <h2 className="text-2xl font-heading font-semibold text-ruche-purple mb-4">Nos Multitude-Services</h2>
+                <h2 className="text-2xl font-heading font-semibold text-ruche-purple mb-4">Nos Services de Couture</h2>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
-                  La Ruche d'Or vous propose une variété de services de qualité pour répondre à tous vos besoins.
+                  La Ruche d'Or vous propose une variété de services de couture de qualité, de la confection sur mesure aux retouches et ajustements.
                 </p>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div className="border border-border rounded-lg p-6 transition-all hover:shadow-md hover:border-ruche-gold">
                   <div className="w-12 h-12 bg-ruche-gold/10 rounded-full flex items-center justify-center mb-4">
-                    <Briefcase className="text-ruche-gold" size={24} />
+                    <Scissors className="text-ruche-gold" size={24} />
                   </div>
-                  <h3 className="text-xl font-heading font-semibold text-ruche-purple mb-2">Service de Couture</h3>
+                  <h3 className="text-xl font-heading font-semibold text-ruche-purple mb-2">Confection sur Mesure</h3>
                   <p className="text-muted-foreground">
-                    Service de couture sur mesure, retouches et ajustements pour tous vos vêtements.
+                    Création de vêtements sur mesure selon vos goûts et mensurations, dans le tissu de votre choix.
+                  </p>
+                </div>
+                
+                <div className="border border-border rounded-lg p-6 transition-all hover:shadow-md hover:border-ruche-gold">
+                  <div className="w-12 h-12 bg-ruche-gold/10 rounded-full flex items-center justify-center mb-4">
+                    <Scissors className="text-ruche-gold" size={24} />
+                  </div>
+                  <h3 className="text-xl font-heading font-semibold text-ruche-purple mb-2">Retouches & Ajustements</h3>
+                  <p className="text-muted-foreground">
+                    Service de retouches et d'ajustements pour adapter parfaitement vos vêtements à votre silhouette.
+                  </p>
+                </div>
+                
+                <div className="border border-border rounded-lg p-6 transition-all hover:shadow-md hover:border-ruche-gold">
+                  <div className="w-12 h-12 bg-ruche-gold/10 rounded-full flex items-center justify-center mb-4">
+                    <Scissors className="text-ruche-gold" size={24} />
+                  </div>
+                  <h3 className="text-xl font-heading font-semibold text-ruche-purple mb-2">Confection de Pagnes</h3>
+                  <p className="text-muted-foreground">
+                    Confection professionnelle de pagnes traditionnels africains pour hommes et femmes.
                   </p>
                 </div>
                 
@@ -288,48 +314,28 @@ const Shop = () => {
                 
                 <div className="border border-border rounded-lg p-6 transition-all hover:shadow-md hover:border-ruche-gold">
                   <div className="w-12 h-12 bg-ruche-gold/10 rounded-full flex items-center justify-center mb-4">
-                    <Briefcase className="text-ruche-gold" size={24} />
+                    <Scissors className="text-ruche-gold" size={24} />
                   </div>
-                  <h3 className="text-xl font-heading font-semibold text-ruche-purple mb-2">Consultation Mode</h3>
+                  <h3 className="text-xl font-heading font-semibold text-ruche-purple mb-2">Tenues Traditionnelles</h3>
                   <p className="text-muted-foreground">
-                    Conseils personnalisés en style vestimentaire adaptés à votre silhouette et à vos préférences.
+                    Confection de tenues traditionnelles africaines pour cérémonies et occasions spéciales.
                   </p>
                 </div>
                 
                 <div className="border border-border rounded-lg p-6 transition-all hover:shadow-md hover:border-ruche-gold">
                   <div className="w-12 h-12 bg-ruche-gold/10 rounded-full flex items-center justify-center mb-4">
-                    <Briefcase className="text-ruche-gold" size={24} />
+                    <Scissors className="text-ruche-gold" size={24} />
                   </div>
-                  <h3 className="text-xl font-heading font-semibold text-ruche-purple mb-2">Livraison à Domicile</h3>
+                  <h3 className="text-xl font-heading font-semibold text-ruche-purple mb-2">Broderie Personnalisée</h3>
                   <p className="text-muted-foreground">
-                    Service de livraison rapide de vos achats directement à votre domicile ou bureau.
-                  </p>
-                </div>
-                
-                <div className="border border-border rounded-lg p-6 transition-all hover:shadow-md hover:border-ruche-gold">
-                  <div className="w-12 h-12 bg-ruche-gold/10 rounded-full flex items-center justify-center mb-4">
-                    <Briefcase className="text-ruche-gold" size={24} />
-                  </div>
-                  <h3 className="text-xl font-heading font-semibold text-ruche-purple mb-2">Recharge Mobile</h3>
-                  <p className="text-muted-foreground">
-                    Recharge rapide et facile pour tous les opérateurs téléphoniques locaux.
-                  </p>
-                </div>
-                
-                <div className="border border-border rounded-lg p-6 transition-all hover:shadow-md hover:border-ruche-gold">
-                  <div className="w-12 h-12 bg-ruche-gold/10 rounded-full flex items-center justify-center mb-4">
-                    <Briefcase className="text-ruche-gold" size={24} />
-                  </div>
-                  <h3 className="text-xl font-heading font-semibold text-ruche-purple mb-2">Événements Spéciaux</h3>
-                  <p className="text-muted-foreground">
-                    Organisation et tenues pour événements spéciaux : mariages, cérémonies, fêtes.
+                    Service de broderie personnalisée pour ajouter une touche unique à vos vêtements et accessoires.
                   </p>
                 </div>
               </div>
               
               <div className="mt-12 text-center">
                 <p className="text-lg text-ruche-purple mb-4">
-                  Vous avez besoin d'un service spécifique ? Contactez-nous !
+                  Besoin d'un service de couture spécifique ? Contactez-nous !
                 </p>
                 <Button 
                   className="bg-ruche-gold hover:bg-ruche-gold-light text-white"
@@ -347,7 +353,3 @@ const Shop = () => {
 };
 
 export default Shop;
-
-
-
-
