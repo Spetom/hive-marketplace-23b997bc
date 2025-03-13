@@ -44,7 +44,7 @@ const About = () => {
               <div className="relative rounded-xl overflow-hidden shadow-xl">
                 <div className="absolute inset-0 bg-ruche-gold/10"></div>
                 <img 
-                  src="/placeholder.svg" 
+                  src="/lovable-uploads/8c802d68-775a-4882-b7fe-3a1f44ade043.png" 
                   alt="L'histoire de La Ruche d'Or" 
                   className="w-full h-auto object-cover"
                 />

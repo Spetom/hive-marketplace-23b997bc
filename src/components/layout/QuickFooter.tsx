@@ -61,7 +61,7 @@ const QuickFooter = () => {
             <ul className="space-y-3">
               <li className="flex items-start">
                 <MapPin size={18} className="mr-2 mt-1 text-ruche-gold/80" />
-                <span className="text-white/80">Tokpota maison Assogba, Cotonou, Bénin</span>
+                <span className="text-white/80">Tokpota maison Assogba, Porto-Novo, Bénin</span>
               </li>
               <li className="flex items-center">
                 <Phone size={18} className="mr-2 text-ruche-gold/80" />
