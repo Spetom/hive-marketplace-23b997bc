@@ -16,13 +16,17 @@ const Shop = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [priceRange, setPriceRange] = useState([0, 300]);
+  const [priceRange, setPriceRange] = useState([0, 200000]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     categoryParam ? [categoryParam] : []
   );
   const [inStockOnly, setInStockOnly] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('pret-a-porter');
+  
+  const euroToFCFA = (euroPrice: number): number => {
+    return Math.round(euroPrice * 655.957);
+  };
   
   useEffect(() => {
     const storedTab = localStorage.getItem('activeShopTab');
@@ -77,8 +81,9 @@ const Shop = () => {
     }
     
     result = result.filter(product => {
-      const price = product.discountPrice || product.price;
-      return price >= priceRange[0] && price <= priceRange[1];
+      const priceInEuro = product.discountPrice || product.price;
+      const priceInFCFA = euroToFCFA(priceInEuro);
+      return priceInFCFA >= priceRange[0] && priceInFCFA <= priceRange[1];
     });
     
     if (inStockOnly) {
@@ -109,7 +114,7 @@ const Shop = () => {
   
   const resetFilters = () => {
     setSearchQuery('');
-    setPriceRange([0, 300]);
+    setPriceRange([0, 200000]);
     setSelectedCategories([]);
     setInStockOnly(false);
   };
@@ -200,18 +205,18 @@ const Shop = () => {
                     <Slider
                       value={priceRange}
                       min={0}
-                      max={300}
-                      step={10}
+                      max={200000}
+                      step={5000}
                       onValueChange={setPriceRange}
                       className="mb-6"
                     />
                     
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">
-                        {priceRange[0]}€
+                        {priceRange[0].toLocaleString()} FCFA
                       </span>
                       <span className="text-sm text-muted-foreground">
-                        {priceRange[1]}€
+                        {priceRange[1].toLocaleString()} FCFA
                       </span>
                     </div>
                   </div>
