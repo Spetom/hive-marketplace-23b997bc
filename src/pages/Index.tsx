@@ -1,4 +1,5 @@
 
+import { useState } from 'react';
 import Hero from '@/components/home/Hero';
 import Features from '@/components/home/Features';
 import ProductGrid from '@/components/shop/ProductGrid';
@@ -7,9 +8,49 @@ import { getFeaturedProducts } from '@/lib/data';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { Helmet } from 'react-helmet';
+import { toast } from 'sonner';
 
 const Index = () => {
   const featuredProducts = getFeaturedProducts();
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !email.includes('@')) {
+      toast.error('Veuillez entrer une adresse email valide');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch(`https://formspree.io/f/${import.meta.env.VITE_FORMSPREE_CONTACT_ID || 'mqapaknd'}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: email,
+          subject: 'Nouvelle inscription à la newsletter',
+          message: `Nouvelle inscription à la newsletter: ${email}`
+        })
+      });
+      
+      if (response.ok) {
+        toast.success('Merci pour votre inscription à notre newsletter!');
+        setEmail('');
+      } else {
+        throw new Error('Échec de l\'envoi');
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'inscription à la newsletter:', error);
+      toast.error('Une erreur est survenue. Veuillez réessayer plus tard.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   
   return (
     <>
@@ -59,16 +100,23 @@ const Index = () => {
                 Inscrivez-vous à notre newsletter pour recevoir les dernières actualités et offres exclusives.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
                 <input
                   type="email"
                   placeholder="Votre adresse email"
                   className="flex-grow px-4 py-3 rounded-md focus:outline-none"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
-                <Button className="bg-ruche-gold hover:bg-ruche-gold-light text-ruche-purple font-medium">
-                  S'inscrire
+                <Button 
+                  type="submit"
+                  className="bg-ruche-gold hover:bg-ruche-gold-light text-ruche-purple font-medium"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Envoi...' : 'S\'inscrire'}
                 </Button>
-              </div>
+              </form>
               
               <p className="text-white/60 text-sm mt-4">
                 En vous inscrivant, vous acceptez notre politique de confidentialité.
