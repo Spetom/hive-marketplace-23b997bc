@@ -65,7 +65,7 @@ const QuickFooter = () => {
               </li>
               <li className="flex items-center">
                 <Phone size={18} className="mr-2 text-ruche-gold/80" />
-                <a href="tel:+22997050090" className="text-white/80 hover:text-ruche-gold transition-colors">+229 97 05 00 90</a>
+                <a href="tel:+2290197050090" className="text-white/80 hover:text-ruche-gold transition-colors">+2290197050090</a>
               </li>
               <li className="flex items-center">
                 <MessageCircle size={18} className="mr-2 text-ruche-gold/80" />
