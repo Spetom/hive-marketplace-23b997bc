@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -17,6 +16,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { countries } from '@/lib/data';
+import { sendOrderConfirmation } from '@/lib/emailService';
 import {
   Select,
   SelectContent,
@@ -77,20 +77,28 @@ const Checkout = () => {
     setPaymentProcessing(true);
     setPaymentError(null);
 
-    // Simuler un processus de paiement (normalement vous appelleriez l'API du processeur de paiement ici)
-    setTimeout(() => {
-      // Ici, nous envoyons normalement les détails de la commande au serveur
-      // qui enverrait ensuite un email de confirmation à contact@laruche-dor.com
-      console.log("Commande traitée avec succès. Un email sera envoyé à contact@laruche-dor.com");
-      
-      // Dans une application réelle, vous pourriez utiliser un service comme EmailJS ou une API backend
-      // pour envoyer un email à l'adresse contact@laruche-dor.com
-      // Exemple: sendOrderConfirmation(customerInfo, items, totalPrice, 'contact@laruche-dor.com');
-      
-      setPaymentProcessing(false);
-      setPaymentCompleted(true);
-      clearCart();
-      toast.success(`Paiement effectué avec succès via ${getPaymentMethodName(selectedPaymentMethod)}!`);
+    setTimeout(async () => {
+      try {
+        const orderInfo = {
+          customerInfo,
+          items,
+          totalPrice,
+          paymentMethod: getPaymentMethodName(selectedPaymentMethod)
+        };
+        
+        await sendOrderConfirmation(orderInfo);
+        console.log("Commande traitée avec succès. Un email a été envoyé à contact@laruche-dor.com");
+        
+        setPaymentProcessing(false);
+        setPaymentCompleted(true);
+        clearCart();
+        toast.success(`Paiement effectué avec succès via ${getPaymentMethodName(selectedPaymentMethod)}!`);
+      } catch (error) {
+        console.error("Erreur lors du traitement de la commande:", error);
+        setPaymentProcessing(false);
+        setPaymentError("Une erreur est survenue lors du traitement de votre commande. Veuillez réessayer.");
+        toast.error("Erreur lors du traitement de la commande");
+      }
     }, 2000);
   };
 

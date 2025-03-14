@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
@@ -12,6 +11,13 @@ const Navbar = () => {
   const location = useLocation();
   const { totalItems } = useCart();
   
+  const links = [
+    { name: 'Accueil', path: '/' },
+    { name: 'Boutique', path: '/shop' },
+    { name: 'À propos', path: '/about' },
+    { name: 'Contact', path: '/contact' },
+  ];
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -50,42 +56,18 @@ const Navbar = () => {
           </Link>
           
           <nav className="hidden md:flex items-center space-x-8">
-            <Link 
-              to="/" 
-              className={cn(
-                "text-ruche-purple hover:text-ruche-gold transition-colors btn-hover",
-                isActive('/') && "font-medium"
-              )}
-            >
-              Accueil
-            </Link>
-            <Link 
-              to="/shop" 
-              className={cn(
-                "text-ruche-purple hover:text-ruche-gold transition-colors btn-hover",
-                isActive('/shop') && "font-medium"
-              )}
-            >
-              Boutique
-            </Link>
-            <Link 
-              to="/about" 
-              className={cn(
-                "text-ruche-purple hover:text-ruche-gold transition-colors btn-hover",
-                isActive('/about') && "font-medium"
-              )}
-            >
-              À Propos
-            </Link>
-            <Link 
-              to="/contact" 
-              className={cn(
-                "text-ruche-purple hover:text-ruche-gold transition-colors btn-hover",
-                isActive('/contact') && "font-medium"
-              )}
-            >
-              Contact
-            </Link>
+            {links.map(link => (
+              <Link 
+                key={link.path} 
+                to={link.path} 
+                className={cn(
+                  "text-ruche-purple hover:text-ruche-gold transition-colors btn-hover",
+                  isActive(link.path) && "font-medium"
+                )}
+              >
+                {link.name}
+              </Link>
+            ))}
           </nav>
           
           <div className="flex items-center space-x-4">
@@ -121,42 +103,18 @@ const Navbar = () => {
         <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-md animate-slide-down">
           <div className="container-custom py-4">
             <nav className="flex flex-col space-y-4">
-              <Link 
-                to="/" 
-                className={cn(
-                  "text-ruche-purple hover:text-ruche-gold transition-colors py-2",
-                  isActive('/') && "font-medium"
-                )}
-              >
-                Accueil
-              </Link>
-              <Link 
-                to="/shop" 
-                className={cn(
-                  "text-ruche-purple hover:text-ruche-gold transition-colors py-2",
-                  isActive('/shop') && "font-medium"
-                )}
-              >
-                Boutique
-              </Link>
-              <Link 
-                to="/about" 
-                className={cn(
-                  "text-ruche-purple hover:text-ruche-gold transition-colors py-2",
-                  isActive('/about') && "font-medium"
-                )}
-              >
-                À Propos
-              </Link>
-              <Link 
-                to="/contact" 
-                className={cn(
-                  "text-ruche-purple hover:text-ruche-gold transition-colors py-2",
-                  isActive('/contact') && "font-medium"
-                )}
-              >
-                Contact
-              </Link>
+              {links.map(link => (
+                <Link 
+                  key={link.path} 
+                  to={link.path} 
+                  className={cn(
+                    "text-ruche-purple hover:text-ruche-gold transition-colors py-2",
+                    isActive(link.path) && "font-medium"
+                  )}
+                >
+                  {link.name}
+                </Link>
+              ))}
             </nav>
           </div>
         </div>
