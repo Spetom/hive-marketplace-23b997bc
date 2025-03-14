@@ -32,10 +32,10 @@ interface ContactMessage {
 }
 
 // Formspree Form ID pour le formulaire de contact
-const FORMSPREE_CONTACT_ID = "xpzyezol"; // Remplacez par votre ID Formspree
+const FORMSPREE_CONTACT_ID = "mqapaknd"; // ID Formspree mis à jour
 
 // Formspree Form ID pour les commandes
-const FORMSPREE_ORDER_ID = "xvoyaenn"; // Remplacez par votre ID Formspree
+const FORMSPREE_ORDER_ID = "xvoyaenn"; // Remplacez par votre ID Formspree pour les commandes
 
 // Fonction pour envoyer un email de confirmation de commande
 export const sendOrderConfirmation = async (orderInfo: OrderInfo): Promise<boolean> => {
