@@ -35,7 +35,7 @@ interface ContactMessage {
 const FORMSPREE_CONTACT_ID = "mqapaknd"; // ID Formspree mis à jour
 
 // Formspree Form ID pour les commandes
-const FORMSPREE_ORDER_ID = "xvoyaenn"; // Remplacez par votre ID Formspree pour les commandes
+const FORMSPREE_ORDER_ID = "mldjdezp"; // ID Formspree mis à jour pour les commandes
 
 // Fonction pour envoyer un email de confirmation de commande
 export const sendOrderConfirmation = async (orderInfo: OrderInfo): Promise<boolean> => {
