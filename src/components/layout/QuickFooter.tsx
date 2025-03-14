@@ -73,7 +73,7 @@ const QuickFooter = () => {
               </li>
               <li className="flex items-center">
                 <Mail size={18} className="mr-2 text-ruche-gold/80" />
-                <a href="mailto:contact@laruchedor.bj" className="text-white/80 hover:text-ruche-gold transition-colors">contact@laruchedor.bj</a>
+                <a href="mailto:contact@laruche-dor.com" className="text-white/80 hover:text-ruche-gold transition-colors">contact@laruche-dor.com</a>
               </li>
             </ul>
           </div>

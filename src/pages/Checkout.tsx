@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -78,6 +79,14 @@ const Checkout = () => {
 
     // Simuler un processus de paiement (normalement vous appelleriez l'API du processeur de paiement ici)
     setTimeout(() => {
+      // Ici, nous envoyons normalement les détails de la commande au serveur
+      // qui enverrait ensuite un email de confirmation à contact@laruche-dor.com
+      console.log("Commande traitée avec succès. Un email sera envoyé à contact@laruche-dor.com");
+      
+      // Dans une application réelle, vous pourriez utiliser un service comme EmailJS ou une API backend
+      // pour envoyer un email à l'adresse contact@laruche-dor.com
+      // Exemple: sendOrderConfirmation(customerInfo, items, totalPrice, 'contact@laruche-dor.com');
+      
       setPaymentProcessing(false);
       setPaymentCompleted(true);
       clearCart();
