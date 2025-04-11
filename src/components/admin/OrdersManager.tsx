@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,7 +27,7 @@ type Order = {
   customer_email: string;
   total_amount: number;
   status: string;
-  shipping_address: any;
+  shipping_address: Record<string, any> | null;
   created_at: string;
 };
 
@@ -37,7 +36,7 @@ type OrderItem = {
   product_name: string;
   quantity: number;
   unit_price: number;
-  variant_info?: any;
+  variant_info?: Record<string, any> | null;
 };
 
 const OrdersManager = () => {
@@ -177,8 +176,7 @@ const OrdersManager = () => {
     return matchesSearch && matchesStatus;
   });
   
-  // Helper function to safely render shipping address properties
-  const renderAddressProperty = (address: any, property: string): string => {
+  const renderAddressProperty = (address: Record<string, any> | null, property: string): string => {
     if (!address) return '';
     return typeof address[property] === 'string' ? address[property] : '';
   };
@@ -381,7 +379,7 @@ const OrdersManager = () => {
                                 {item.variant_info && (
                                   <div className="text-xs text-muted-foreground mt-1">
                                     {Object.entries(item.variant_info).map(([key, value]) => (
-                                      <span key={key}>{key}: {value}, </span>
+                                      <span key={key}>{key}: {String(value)}, </span>
                                     ))}
                                   </div>
                                 )}
