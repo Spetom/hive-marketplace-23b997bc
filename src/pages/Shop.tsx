@@ -1,8 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductGrid from '@/components/shop/ProductGrid';
-import { products as initialProducts, categories } from '@/lib/data';
+import { categories } from '@/lib/data';
 import { Helmet } from 'react-helmet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,11 +9,12 @@ import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Search, FilterX, ShoppingBag, Scissors, Briefcase } from 'lucide-react';
 import { Product } from '@/lib/data';
+import { fetchProducts, mapSupabaseToProduct } from '@/services/productService';
+import { useQuery } from '@tanstack/react-query';
 
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get('category');
-  const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [priceRange, setPriceRange] = useState([0, 200000]);
@@ -22,12 +22,19 @@ const Shop = () => {
     categoryParam ? [categoryParam] : []
   );
   const [inStockOnly, setInStockOnly] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('pret-a-porter');
   
   const euroToFCFA = (euroPrice: number): number => {
     return Math.round(euroPrice * 655.957);
   };
+  
+  const { data: products = [], isLoading, isError } = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
+      const products = await fetchProducts();
+      return products.map(mapSupabaseToProduct);
+    },
+  });
   
   useEffect(() => {
     const storedTab = localStorage.getItem('activeShopTab');
@@ -35,35 +42,6 @@ const Shop = () => {
       setActiveTab(storedTab);
       localStorage.removeItem('activeShopTab');
     }
-    
-    setIsLoading(true);
-    
-    const initializeProducts = () => {
-      try {
-        const storedProducts = localStorage.getItem('adminProducts');
-        if (storedProducts) {
-          const parsedProducts = JSON.parse(storedProducts);
-          // Filter out products that are not mode or tissus categories
-          const filteredProducts = parsedProducts.filter(
-            (product: Product) => product.category === "mode" || product.category === "tissus"
-          );
-          setProducts(filteredProducts);
-        } else {
-          setProducts(initialProducts);
-        }
-      } catch (error) {
-        console.error("Erreur lors du chargement des produits depuis localStorage:", error);
-        setProducts(initialProducts);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    const timer = setTimeout(() => {
-      initializeProducts();
-    }, 100);
-    
-    return () => clearTimeout(timer);
   }, []);
   
   useEffect(() => {
@@ -269,7 +247,19 @@ const Shop = () => {
                   </select>
                 </div>
                 
-                <ProductGrid products={filteredProducts} />
+                {isLoading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {Array.from({ length: 8 }).map((_, index) => (
+                      <div key={index} className="space-y-3">
+                        <Skeleton className="h-60 w-full rounded-lg" />
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <ProductGrid products={filteredProducts} />
+                )}
               </div>
             </div>
           ) : (

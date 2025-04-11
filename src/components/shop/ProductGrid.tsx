@@ -9,7 +9,7 @@ import { fetchProducts, mapSupabaseToProduct } from '@/services/productService';
 import { useQuery } from '@tanstack/react-query';
 
 interface ProductGridProps {
-  products: Product[];
+  products?: Product[];
   title?: string;
   showFilters?: boolean;
 }
