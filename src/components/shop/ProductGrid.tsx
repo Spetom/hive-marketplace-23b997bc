@@ -5,6 +5,8 @@ import ProductCard from './ProductCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { fetchProducts, mapSupabaseToProduct } from '@/services/productService';
+import { useQuery } from '@tanstack/react-query';
 
 interface ProductGridProps {
   products: Product[];
@@ -14,33 +16,17 @@ interface ProductGridProps {
 
 const ProductGrid = ({ products: initialProducts, title, showFilters = false }: ProductGridProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [loading, setLoading] = useState(true);
-  const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   
-  // Load products from localStorage if available
-  useEffect(() => {
-    const storedProducts = localStorage.getItem('adminProducts');
-    if (storedProducts) {
-      try {
-        const parsedProducts = JSON.parse(storedProducts);
-        // Afficher tous les produits, même ceux avec des images génériques
-        setProducts(parsedProducts);
-      } catch (error) {
-        console.error("Erreur lors du chargement des produits depuis localStorage:", error);
-        setProducts(initialProducts);
-      }
-    } else {
-      setProducts(initialProducts);
-    }
-    
-    // Simulate loading
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 600);
-    
-    return () => clearTimeout(timer);
-  }, [initialProducts]);
+  // Utiliser React Query pour récupérer les produits
+  const { data: products = [], isLoading, isError } = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
+      const products = await fetchProducts();
+      return products.map(mapSupabaseToProduct);
+    },
+    initialData: initialProducts,
+  });
   
   useEffect(() => {
     if (selectedCategory === 'all') {
@@ -90,7 +76,7 @@ const ProductGrid = ({ products: initialProducts, title, showFilters = false }: 
       )}
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {loading
+        {isLoading
           ? Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className="space-y-3">
                 <Skeleton className="h-60 w-full rounded-lg" />
@@ -104,9 +90,13 @@ const ProductGrid = ({ products: initialProducts, title, showFilters = false }: 
         }
       </div>
       
-      {!loading && filteredProducts.length === 0 && (
+      {!isLoading && filteredProducts.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-muted-foreground text-lg">Aucun produit trouvé dans cette catégorie.</p>
+          <p className="text-muted-foreground text-lg">
+            {isError 
+              ? "Une erreur est survenue lors du chargement des produits." 
+              : "Aucun produit trouvé dans cette catégorie."}
+          </p>
         </div>
       )}
     </div>

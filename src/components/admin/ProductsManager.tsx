@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { Product, products as initialProducts, categories } from '@/lib/data';
+import { Product } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -32,13 +33,24 @@ import {
   Pencil, 
   Trash, 
   ImagePlus,
-  Save
+  Save,
+  RefreshCw,
+  Database,
+  Download
 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { categories } from '@/lib/data';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { 
+  fetchProducts, 
+  createProduct, 
+  updateProduct, 
+  deleteProduct,
+  mapSupabaseToProduct 
+} from '@/services/productService';
 
 const ProductsManager = () => {
-  const [productsList, setProductsList] = useState<Product[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -46,11 +58,12 @@ const ProductsManager = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const queryClient = useQueryClient();
 
   const [tempProduct, setTempProduct] = useState<Product>({
     id: '',
     name: '',
-    category: 'electronique',
+    category: 'mode',
     price: 0,
     image: '',
     description: '',
@@ -59,30 +72,62 @@ const ProductsManager = () => {
     featured: false
   });
 
-  useEffect(() => {
-    try {
-      const storedProducts = localStorage.getItem('adminProducts');
-      if (storedProducts) {
-        setProductsList(JSON.parse(storedProducts));
-      } else {
-        setProductsList(initialProducts);
-        localStorage.setItem('adminProducts', JSON.stringify(initialProducts));
-      }
-    } catch (error) {
-      console.error("Erreur lors du chargement des produits:", error);
-      setProductsList(initialProducts);
-    }
-  }, []);
+  // Charger les produits avec React Query
+  const { data: productsList = [], isLoading, isError, refetch } = useQuery({
+    queryKey: ['products'],
+    queryFn: async () => {
+      const products = await fetchProducts();
+      return products.map(mapSupabaseToProduct);
+    },
+  });
 
-  useEffect(() => {
-    if (productsList.length > 0) {
-      try {
-        localStorage.setItem('adminProducts', JSON.stringify(productsList));
-      } catch (error) {
-        console.error("Erreur lors de la sauvegarde des produits:", error);
+  // Mutation pour créer un produit
+  const createMutation = useMutation({
+    mutationFn: (product: Omit<Product, 'id'>) => createProduct(product),
+    onSuccess: (data) => {
+      if (data) {
+        queryClient.invalidateQueries({ queryKey: ['products'] });
+        toast.success(`Produit "${tempProduct.name}" créé`, {
+          description: "Les modifications ont été enregistrées.",
+          icon: <Save className="h-4 w-4" />
+        });
+        setUnsavedChanges(false);
+        setIsDialogOpen(false);
       }
     }
-  }, [productsList]);
+  });
+
+  // Mutation pour mettre à jour un produit
+  const updateMutation = useMutation({
+    mutationFn: ({ id, product }: { id: string, product: Partial<Product> }) => updateProduct(id, product),
+    onSuccess: (data) => {
+      if (data) {
+        queryClient.invalidateQueries({ queryKey: ['products'] });
+        toast.success(`Produit "${tempProduct.name}" mis à jour`, {
+          description: "Les modifications ont été enregistrées.",
+          icon: <Save className="h-4 w-4" />
+        });
+        setUnsavedChanges(false);
+        setIsDialogOpen(false);
+      }
+    }
+  });
+
+  // Mutation pour supprimer un produit
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteProduct(id),
+    onSuccess: (success, id) => {
+      if (success) {
+        queryClient.invalidateQueries({ queryKey: ['products'] });
+        toast.success(`Produit supprimé`, {
+          description: "Le produit a été supprimé avec succès.",
+          icon: <Trash className="h-4 w-4" />
+        });
+        setIsDeleteDialogOpen(false);
+        setEditingProduct(null);
+      }
+    }
+  });
 
   useEffect(() => {
     if (!isDialogOpen || !autoSaveEnabled || !unsavedChanges) return;
@@ -91,25 +136,7 @@ const ProductsManager = () => {
     
     const autoSaveTimer = setTimeout(() => {
       try {
-        if (isCreating) {
-          const updatedProducts = [...productsList, tempProduct];
-          setProductsList(updatedProducts);
-          localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
-          setUnsavedChanges(false);
-          toast.success(`Produit "${tempProduct.name}" automatiquement sauvegardé`, {
-            description: "Modifications enregistrées",
-            icon: <Save className="h-4 w-4" />
-          });
-        } else if (editingProduct) {
-          const updatedProducts = productsList.map(p => p.id === tempProduct.id ? tempProduct : p);
-          setProductsList(updatedProducts);
-          localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
-          setUnsavedChanges(false);
-          toast.success(`Produit "${tempProduct.name}" automatiquement mis à jour`, {
-            description: "Modifications enregistrées",
-            icon: <Save className="h-4 w-4" />
-          });
-        }
+        saveProduct();
       } catch (error) {
         console.error("Erreur lors de la sauvegarde automatique:", error);
         toast.error("Erreur lors de la sauvegarde automatique", {
@@ -119,7 +146,7 @@ const ProductsManager = () => {
     }, 2000);
     
     return () => clearTimeout(autoSaveTimer);
-  }, [tempProduct, isDialogOpen, autoSaveEnabled, unsavedChanges, isCreating, editingProduct, productsList]);
+  }, [tempProduct, isDialogOpen, autoSaveEnabled, unsavedChanges]);
 
   const filteredProducts = productsList.filter(product => 
     product.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -140,26 +167,16 @@ const ProductsManager = () => {
 
   const confirmDeleteProduct = () => {
     if (editingProduct) {
-      const updatedProducts = productsList.filter(p => p.id !== editingProduct.id);
-      setProductsList(updatedProducts);
-      localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
-      
-      toast.success(`Produit "${editingProduct.name}" supprimé`, {
-        description: "Les modifications ont été enregistrées automatiquement.",
-        icon: <Save className="h-4 w-4" />
-      });
-      setIsDeleteDialogOpen(false);
-      setEditingProduct(null);
+      deleteMutation.mutate(editingProduct.id);
     }
   };
 
   const handleCreateProduct = () => {
     setEditingProduct(null);
-    const newId = `new-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     setTempProduct({
-      id: newId,
+      id: '', // l'ID sera généré par Supabase
       name: '',
-      category: 'electronique',
+      category: 'mode',
       price: 0,
       image: 'https://source.unsplash.com/random/300x300?product',
       description: '',
@@ -188,38 +205,12 @@ const ProductsManager = () => {
       return;
     }
 
-    let updatedProducts;
-    
     if (isCreating) {
-      if (productsList.some(p => p.id === tempProduct.id)) {
-        const newProduct = {
-          ...tempProduct,
-          id: `new-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
-        };
-        updatedProducts = [...productsList, newProduct];
-      } else {
-        updatedProducts = [...productsList, tempProduct];
-      }
-
-      setProductsList(updatedProducts);
-      
-      toast.success(`Produit "${tempProduct.name}" créé`, {
-        description: "Les modifications ont été enregistrées.",
-        icon: <Save className="h-4 w-4" />
-      });
-    } else {
-      updatedProducts = productsList.map(p => p.id === tempProduct.id ? tempProduct : p);
-      setProductsList(updatedProducts);
-      
-      toast.success(`Produit "${tempProduct.name}" mis à jour`, {
-        description: "Les modifications ont été enregistrées.",
-        icon: <Save className="h-4 w-4" />
-      });
+      const { id, ...productToCreate } = tempProduct; // On ignore l'id pour la création
+      createMutation.mutate(productToCreate);
+    } else if (editingProduct) {
+      updateMutation.mutate({ id: tempProduct.id, product: tempProduct });
     }
-    
-    localStorage.setItem('adminProducts', JSON.stringify(updatedProducts));
-    setUnsavedChanges(false);
-    setIsDialogOpen(false);
   };
 
   const exportData = () => {
@@ -241,26 +232,38 @@ const ProductsManager = () => {
   return (
     <div className="bg-white rounded-lg border border-border">
       <div className="p-4 flex justify-between items-center border-b">
-        <div className="relative w-1/3">
-          <Input
-            placeholder="Rechercher un produit..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-          <svg 
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
-            xmlns="http://www.w3.org/2000/svg" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
+        <div className="flex items-center gap-4">
+          <div className="relative w-64">
+            <Input
+              placeholder="Rechercher un produit..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+            <svg 
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+          </div>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={() => refetch()} 
+            title="Rafraîchir"
           >
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.35-4.35" />
-          </svg>
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+          {isLoading && <span className="text-sm text-muted-foreground">Chargement...</span>}
+          {isError && <span className="text-sm text-red-500">Erreur de chargement</span>}
         </div>
         
         <div className="flex gap-2">
@@ -269,6 +272,7 @@ const ProductsManager = () => {
             onClick={exportData}
             className="text-ruche-purple"
           >
+            <Download className="mr-2 h-4 w-4" />
             Exporter JSON
           </Button>
           
@@ -296,7 +300,7 @@ const ProductsManager = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredProducts.map((product) => (
+            {filteredProducts.length > 0 ? filteredProducts.map((product) => (
               <TableRow key={product.id}>
                 <TableCell>
                   <div className="w-12 h-12 rounded-md overflow-hidden bg-gray-100">
@@ -356,12 +360,15 @@ const ProductsManager = () => {
                   </div>
                 </TableCell>
               </TableRow>
-            ))}
-            
-            {filteredProducts.length === 0 && (
+            )) : (
               <TableRow>
                 <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                  Aucun produit trouvé
+                  {isLoading ? 
+                    'Chargement des produits...' : 
+                    isError ? 
+                      'Erreur lors du chargement des produits' : 
+                      'Aucun produit trouvé'
+                  }
                 </TableCell>
               </TableRow>
             )}
@@ -548,8 +555,14 @@ const ProductsManager = () => {
             <Button 
               onClick={saveProduct}
               className="bg-ruche-gold hover:bg-ruche-gold-dark"
+              disabled={createMutation.isPending || updateMutation.isPending}
             >
-              {isCreating ? 'Créer' : 'Enregistrer'}
+              {(createMutation.isPending || updateMutation.isPending) ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Chargement...
+                </>
+              ) : isCreating ? 'Créer' : 'Enregistrer'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -572,8 +585,14 @@ const ProductsManager = () => {
             <Button 
               onClick={confirmDeleteProduct}
               variant="destructive"
+              disabled={deleteMutation.isPending}
             >
-              Supprimer
+              {deleteMutation.isPending ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Suppression...
+                </>
+              ) : 'Supprimer'}
             </Button>
           </DialogFooter>
         </DialogContent>
