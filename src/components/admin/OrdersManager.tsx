@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -176,6 +177,12 @@ const OrdersManager = () => {
     return matchesSearch && matchesStatus;
   });
   
+  // Helper function to safely render shipping address properties
+  const renderAddressProperty = (address: any, property: string): string => {
+    if (!address) return '';
+    return typeof address[property] === 'string' ? address[property] : '';
+  };
+  
   return (
     <div className="bg-white rounded-lg border border-border">
       <div className="p-4 flex justify-between items-center border-b">
@@ -309,9 +316,9 @@ const OrdersManager = () => {
                     <div className="mt-4">
                       <h3 className="text-sm font-medium mb-2">Adresse de livraison</h3>
                       <div className="border rounded-md p-3">
-                        <p>{String(selectedOrder.shipping_address.street || '')}</p>
-                        <p>{String(selectedOrder.shipping_address.city || '')}, {String(selectedOrder.shipping_address.postal_code || '')}</p>
-                        <p>{String(selectedOrder.shipping_address.country || '')}</p>
+                        <p>{renderAddressProperty(selectedOrder.shipping_address, 'street')}</p>
+                        <p>{renderAddressProperty(selectedOrder.shipping_address, 'city')}, {renderAddressProperty(selectedOrder.shipping_address, 'postal_code')}</p>
+                        <p>{renderAddressProperty(selectedOrder.shipping_address, 'country')}</p>
                       </div>
                     </div>
                   )}
