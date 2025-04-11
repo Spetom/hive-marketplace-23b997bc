@@ -11,6 +11,7 @@ import { Search, FilterX, ShoppingBag, Scissors, Briefcase } from 'lucide-react'
 import { Product } from '@/lib/data';
 import { fetchProducts, mapSupabaseToProduct } from '@/services/productService';
 import { useQuery } from '@tanstack/react-query';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const Shop = () => {
   const [searchParams, setSearchParams] = useSearchParams();
