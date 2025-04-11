@@ -1,4 +1,3 @@
-
 // Function to generate image URLs for products without specific images
 const generateImageUrl = (index: number): string => {
   return `https://source.unsplash.com/random/300x300?african,fabric&sig=${index}`;
@@ -130,13 +129,37 @@ export const products: Product[] = [
     rating: 4.9,
     inStock: true,
     featured: true
+  },
+  {
+    id: "14",
+    name: "Collier en perles africaines",
+    category: "bijoux",
+    price: 34.99,
+    image: generateImageUrl(14),
+    description: "Magnifique collier en perles colorées inspiré des traditions africaines, fait main par nos artisans.",
+    rating: 4.8,
+    inStock: true,
+    featured: true
+  },
+  {
+    id: "15",
+    name: "Boucles d'oreilles Adinkra",
+    category: "bijoux",
+    price: 29.99,
+    discountPrice: 24.99,
+    image: generateImageUrl(15),
+    description: "Élégantes boucles d'oreilles avec symboles Adinkra du Ghana, en laiton plaqué or.",
+    rating: 4.9,
+    inStock: true,
+    featured: false
   }
 ];
 
 export const categories = [
   { id: "mode", name: "Vêtements", count: products.filter(p => p.category === "mode").length },
   { id: "tissus", name: "Tissus & Pagnes", count: products.filter(p => p.category === "tissus").length },
-  { id: "accessoires", name: "Accessoires", count: products.filter(p => p.category === "accessoires").length }
+  { id: "accessoires", name: "Accessoires", count: products.filter(p => p.category === "accessoires").length },
+  { id: "bijoux", name: "Bijoux Africains", count: products.filter(p => p.category === "bijoux").length }
 ];
 
 // Liste des pays pour le formulaire de livraison
