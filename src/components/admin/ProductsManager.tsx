@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Product } from '@/lib/data';
 import { Button } from '@/components/ui/button';
@@ -59,7 +58,7 @@ const ProductsManager = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [autoSaveEnabled, setAutoSaveEnabled] = useState(false); // Désactivé par défaut
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -78,7 +77,6 @@ const ProductsManager = () => {
     featured: false
   });
 
-  // Charger les produits avec React Query
   const { data: productsList = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
@@ -87,7 +85,6 @@ const ProductsManager = () => {
     },
   });
 
-  // Mutation pour créer un produit
   const createMutation = useMutation({
     mutationFn: (product: Omit<Product, 'id'>) => createProduct(product),
     onSuccess: (data) => {
@@ -103,7 +100,6 @@ const ProductsManager = () => {
     }
   });
 
-  // Mutation pour mettre à jour un produit
   const updateMutation = useMutation({
     mutationFn: ({ id, product }: { id: string, product: Partial<Product> }) => updateProduct(id, product),
     onSuccess: (data) => {
@@ -114,13 +110,11 @@ const ProductsManager = () => {
           icon: <Save className="h-4 w-4" />
         });
         setUnsavedChanges(false);
-        // Ne pas fermer automatiquement le dialogue après la mise à jour
-        // setIsDialogOpen(false);
+        setIsDialogOpen(false);
       }
     }
   });
 
-  // Mutation pour supprimer un produit
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteProduct(id),
     onSuccess: (success, id) => {
@@ -136,7 +130,6 @@ const ProductsManager = () => {
     }
   });
 
-  // Mutation pour uploader une image
   const uploadMutation = useMutation({
     mutationFn: uploadProductImage,
     onSuccess: (data) => {
@@ -150,7 +143,6 @@ const ProductsManager = () => {
     }
   });
 
-  // Nettoyer le timer lorsque le composant est démonté
   useEffect(() => {
     return () => {
       if (autoSaveTimerRef.current) {
@@ -159,23 +151,19 @@ const ProductsManager = () => {
     };
   }, []);
 
-  // Gestion de l'auto-sauvegarde avec un délai plus long
   useEffect(() => {
     if (!isDialogOpen || !autoSaveEnabled || !unsavedChanges) {
       return;
     }
     
-    // Vérification de base des données requises
     if (!tempProduct.name || tempProduct.name.trim() === '' || tempProduct.price < 0) {
       return;
     }
     
-    // Nettoyer tout timer existant lors d'une modification
     if (autoSaveTimerRef.current) {
       clearTimeout(autoSaveTimerRef.current);
     }
     
-    // Définir un nouveau timer avec un délai plus long (5 secondes)
     autoSaveTimerRef.current = setTimeout(() => {
       try {
         saveProduct();
@@ -185,8 +173,8 @@ const ProductsManager = () => {
           description: "Veuillez réessayer manuellement"
         });
       }
-    }, 5000); // Augmenté à 5 secondes au lieu de 2
-    
+    }, 60000);
+
     return () => {
       if (autoSaveTimerRef.current) {
         clearTimeout(autoSaveTimerRef.current);
@@ -232,7 +220,7 @@ const ProductsManager = () => {
     });
     setIsCreating(true);
     setUnsavedChanges(false);
-    setAutoSaveEnabled(false); // Désactiver l'auto-sauvegarde pour un nouveau produit
+    setAutoSaveEnabled(false);
     setIsDialogOpen(true);
   };
 
@@ -245,7 +233,6 @@ const ProductsManager = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Vérifier le type du fichier (images seulement)
     if (!file.type.startsWith('image/')) {
       toast.error("Type de fichier non supporté", {
         description: "Veuillez télécharger une image (JPG, PNG, GIF, etc.)"
@@ -253,7 +240,6 @@ const ProductsManager = () => {
       return;
     }
 
-    // Vérifier la taille du fichier (max 5 MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Fichier trop volumineux", {
         description: "La taille du fichier ne doit pas dépasser 5 MB"
@@ -289,7 +275,7 @@ const ProductsManager = () => {
     }
 
     if (isCreating) {
-      const { id, ...productToCreate } = tempProduct; // On ignore l'id pour la création
+      const { id, ...productToCreate } = tempProduct;
       createMutation.mutate(productToCreate);
     } else if (editingProduct) {
       updateMutation.mutate({ id: tempProduct.id, product: tempProduct });
