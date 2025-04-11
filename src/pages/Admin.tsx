@@ -36,8 +36,8 @@ const Admin = () => {
     }
   }, []);
 
-  // Fonction pour naviguer vers le tableau de bord avec le bon onglet
-  const navigateToDashboard = (tab: string) => {
+  // Function to navigate to dashboard with correct tab
+  const navigateToDashboard = (tab: AdminTabs) => {
     navigate('/dashboard', { state: { activeTab: tab } });
   };
   

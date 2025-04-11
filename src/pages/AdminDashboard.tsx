@@ -17,7 +17,6 @@ import {
   SidebarSeparator,
   SidebarInset
 } from "@/components/ui/sidebar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Users, Tag, BarChart3, Settings, LogOut, Star, Ticket } from "lucide-react";
 
@@ -44,12 +43,10 @@ const AdminDashboard = () => {
   
   // Récupérer l'onglet actif depuis les paramètres de navigation ou utiliser la valeur par défaut
   const getInitialTab = () => {
-    // Check if location.state exists and has activeTab property
-    if (location.state && typeof location.state === 'object' && 'activeTab' in location.state) {
-      const activeTab = (location.state as { activeTab?: string }).activeTab;
-      // Validate that activeTab is a valid AdminTabs value
-      if (activeTab && Object.values(AdminTabs).includes(activeTab as AdminTabs)) {
-        return activeTab as AdminTabs;
+    if (location.state && typeof location.state === 'object') {
+      const state = location.state as { activeTab?: string };
+      if (state.activeTab && Object.values(AdminTabs).includes(state.activeTab as AdminTabs)) {
+        return state.activeTab as AdminTabs;
       }
     }
     return AdminTabs.DASHBOARD;
@@ -61,35 +58,11 @@ const AdminDashboard = () => {
   useEffect(() => {
     const newTab = getInitialTab();
     setActiveTab(newTab);
-  }, [location]);
+  }, [location.state]);
 
   const handleLogout = () => {
     // Logique de déconnexion ici
     navigate('/admin');
-  };
-
-  const renderTabContent = () => {
-    switch(activeTab) {
-      case AdminTabs.DASHBOARD:
-        return <DashboardOverview />;
-      case AdminTabs.PRODUCTS:
-        return <ProductsManager />;
-      case AdminTabs.ORDERS:
-        return <OrdersManager />;
-      case AdminTabs.TESTIMONIALS:
-        return <TestimonialsManager />;
-      case AdminTabs.PROMOCODES:
-        return <PromocodeManager />;
-      case AdminTabs.SETTINGS:
-        return (
-          <div className="p-6 border rounded-lg bg-white shadow-sm">
-            <h2 className="text-xl font-semibold mb-4">Paramètres</h2>
-            <p className="text-muted-foreground">Fonctionnalité en cours de développement.</p>
-          </div>
-        );
-      default:
-        return <DashboardOverview />;
-    }
   };
 
   return (
