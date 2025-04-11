@@ -8,12 +8,14 @@ import {
   TabsTrigger 
 } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from 'react-router-dom';
 import ProductsManager from '@/components/admin/ProductsManager';
 import AdminLogin from '@/components/admin/AdminLogin';
 import { products as initialProducts } from '@/lib/data';
 import { toast } from 'sonner';
 
 const Admin = () => {
+  const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   
   // Initialize products from localStorage or fall back to initial data
@@ -32,6 +34,11 @@ const Admin = () => {
       });
     }
   }, []);
+
+  // Fonction pour naviguer vers le tableau de bord avec le bon onglet
+  const navigateToDashboard = (tab: string) => {
+    navigate('/dashboard', { state: { activeTab: tab } });
+  };
   
   if (!isAuthenticated) {
     return <AdminLogin onAuthenticated={() => setIsAuthenticated(true)} />;
@@ -52,6 +59,12 @@ const Admin = () => {
             </p>
           </div>
           
+          <div className="mb-6">
+            <Button onClick={() => navigate('/dashboard')} variant="default">
+              Accéder au nouveau tableau de bord
+            </Button>
+          </div>
+
           <Tabs defaultValue="products" className="w-full">
             <TabsList className="mb-8">
               <TabsTrigger value="products">Produits</TabsTrigger>
@@ -95,7 +108,13 @@ const Admin = () => {
                           <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Livré</span>
                         </td>
                         <td className="p-3">
-                          <Button variant="ghost" size="sm">Voir</Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => navigateToDashboard('orders')}
+                          >
+                            Voir
+                          </Button>
                         </td>
                       </tr>
                       <tr className="border-b hover:bg-muted/50">
@@ -107,7 +126,13 @@ const Admin = () => {
                           <span className="px-2 py-1 text-xs rounded-full bg-amber-100 text-amber-800">En cours</span>
                         </td>
                         <td className="p-3">
-                          <Button variant="ghost" size="sm">Voir</Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => navigateToDashboard('orders')}
+                          >
+                            Voir
+                          </Button>
                         </td>
                       </tr>
                       <tr className="border-b hover:bg-muted/50">
@@ -119,7 +144,13 @@ const Admin = () => {
                           <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Préparation</span>
                         </td>
                         <td className="p-3">
-                          <Button variant="ghost" size="sm">Voir</Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => navigateToDashboard('orders')}
+                          >
+                            Voir
+                          </Button>
                         </td>
                       </tr>
                     </tbody>
@@ -166,7 +197,13 @@ const Admin = () => {
                         <td className="p-3">3</td>
                         <td className="p-3">01/01/2023</td>
                         <td className="p-3">
-                          <Button variant="ghost" size="sm">Voir</Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => toast.info("Cette fonctionnalité sera disponible prochainement")}
+                          >
+                            Voir
+                          </Button>
                         </td>
                       </tr>
                       <tr className="border-b hover:bg-muted/50">
@@ -176,7 +213,13 @@ const Admin = () => {
                         <td className="p-3">2</td>
                         <td className="p-3">15/02/2023</td>
                         <td className="p-3">
-                          <Button variant="ghost" size="sm">Voir</Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => toast.info("Cette fonctionnalité sera disponible prochainement")}
+                          >
+                            Voir
+                          </Button>
                         </td>
                       </tr>
                       <tr className="border-b hover:bg-muted/50">
@@ -186,7 +229,13 @@ const Admin = () => {
                         <td className="p-3">1</td>
                         <td className="p-3">05/03/2023</td>
                         <td className="p-3">
-                          <Button variant="ghost" size="sm">Voir</Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => toast.info("Cette fonctionnalité sera disponible prochainement")}
+                          >
+                            Voir
+                          </Button>
                         </td>
                       </tr>
                     </tbody>

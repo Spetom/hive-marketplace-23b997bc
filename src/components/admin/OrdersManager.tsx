@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
-import { Eye, FileDown, Filter, Calendar } from 'lucide-react';
+import { Eye, FileDown, Filter, Calendar, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -20,6 +21,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 type Order = {
   id: string;
@@ -275,7 +282,30 @@ const OrdersManager = () => {
                     </div>
                   </TableCell>
                   <TableCell>{getStatusBadge(order.status)}</TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right flex items-center justify-end gap-1">
+                    {/* Ajout du menu déroulant pour changer rapidement le statut */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          Statut
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        {statusOptions.map((status) => (
+                          <DropdownMenuItem 
+                            key={status.value}
+                            onClick={() => updateOrderStatus(order.id, status.value)}
+                            className={order.status === status.value ? "bg-muted" : ""}
+                          >
+                            {status.label}
+                            {order.status === status.value && (
+                              <CheckCircle className="ml-2 h-4 w-4 text-primary" />
+                            )}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    
                     <Button 
                       variant="ghost" 
                       size="sm"

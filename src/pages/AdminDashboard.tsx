@@ -1,7 +1,7 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   SidebarProvider, 
   Sidebar, 
@@ -40,7 +40,22 @@ export enum AdminTabs {
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<AdminTabs>(AdminTabs.DASHBOARD);
+  const location = useLocation();
+  const locationState = location.state as { activeTab?: string } | null;
+  
+  // Récupérer l'onglet actif depuis les paramètres de navigation ou utiliser la valeur par défaut
+  const initialTab = locationState?.activeTab 
+    ? locationState.activeTab as AdminTabs
+    : AdminTabs.DASHBOARD;
+  
+  const [activeTab, setActiveTab] = useState<AdminTabs>(initialTab);
+
+  // Effet pour mettre à jour l'onglet actif lorsque les paramètres de navigation changent
+  useEffect(() => {
+    if (locationState?.activeTab) {
+      setActiveTab(locationState.activeTab as AdminTabs);
+    }
+  }, [location]);
 
   const handleLogout = () => {
     // Logique de déconnexion ici
