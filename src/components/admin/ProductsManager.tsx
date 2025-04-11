@@ -59,11 +59,12 @@ const ProductsManager = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(false); // Désactivé par défaut
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const [tempProduct, setTempProduct] = useState<Product>({
     id: '',
@@ -113,7 +114,8 @@ const ProductsManager = () => {
           icon: <Save className="h-4 w-4" />
         });
         setUnsavedChanges(false);
-        setIsDialogOpen(false);
+        // Ne pas fermer automatiquement le dialogue après la mise à jour
+        // setIsDialogOpen(false);
       }
     }
   });
@@ -148,12 +150,33 @@ const ProductsManager = () => {
     }
   });
 
+  // Nettoyer le timer lorsque le composant est démonté
   useEffect(() => {
-    if (!isDialogOpen || !autoSaveEnabled || !unsavedChanges) return;
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, []);
+
+  // Gestion de l'auto-sauvegarde avec un délai plus long
+  useEffect(() => {
+    if (!isDialogOpen || !autoSaveEnabled || !unsavedChanges) {
+      return;
+    }
     
-    if (!tempProduct.name || tempProduct.price < 0) return;
+    // Vérification de base des données requises
+    if (!tempProduct.name || tempProduct.name.trim() === '' || tempProduct.price < 0) {
+      return;
+    }
     
-    const autoSaveTimer = setTimeout(() => {
+    // Nettoyer tout timer existant lors d'une modification
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+    
+    // Définir un nouveau timer avec un délai plus long (5 secondes)
+    autoSaveTimerRef.current = setTimeout(() => {
       try {
         saveProduct();
       } catch (error) {
@@ -162,9 +185,13 @@ const ProductsManager = () => {
           description: "Veuillez réessayer manuellement"
         });
       }
-    }, 2000);
+    }, 5000); // Augmenté à 5 secondes au lieu de 2
     
-    return () => clearTimeout(autoSaveTimer);
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
   }, [tempProduct, isDialogOpen, autoSaveEnabled, unsavedChanges]);
 
   const filteredProducts = productsList.filter(product => 
@@ -205,6 +232,7 @@ const ProductsManager = () => {
     });
     setIsCreating(true);
     setUnsavedChanges(false);
+    setAutoSaveEnabled(false); // Désactiver l'auto-sauvegarde pour un nouveau produit
     setIsDialogOpen(true);
   };
 
