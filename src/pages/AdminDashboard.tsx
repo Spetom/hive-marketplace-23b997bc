@@ -41,20 +41,26 @@ export enum AdminTabs {
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const locationState = location.state as { activeTab?: string } | null;
   
   // Récupérer l'onglet actif depuis les paramètres de navigation ou utiliser la valeur par défaut
-  const initialTab = locationState?.activeTab 
-    ? locationState.activeTab as AdminTabs
-    : AdminTabs.DASHBOARD;
+  const getInitialTab = () => {
+    // Check if location.state exists and has activeTab property
+    if (location.state && typeof location.state === 'object' && 'activeTab' in location.state) {
+      const activeTab = (location.state as { activeTab?: string }).activeTab;
+      // Validate that activeTab is a valid AdminTabs value
+      if (activeTab && Object.values(AdminTabs).includes(activeTab as AdminTabs)) {
+        return activeTab as AdminTabs;
+      }
+    }
+    return AdminTabs.DASHBOARD;
+  };
   
-  const [activeTab, setActiveTab] = useState<AdminTabs>(initialTab);
+  const [activeTab, setActiveTab] = useState<AdminTabs>(getInitialTab());
 
   // Effet pour mettre à jour l'onglet actif lorsque les paramètres de navigation changent
   useEffect(() => {
-    if (locationState?.activeTab) {
-      setActiveTab(locationState.activeTab as AdminTabs);
-    }
+    const newTab = getInitialTab();
+    setActiveTab(newTab);
   }, [location]);
 
   const handleLogout = () => {
@@ -212,7 +218,17 @@ const AdminDashboard = () => {
                 </h1>
               </div>
               
-              {renderTabContent()}
+              {activeTab === AdminTabs.DASHBOARD && <DashboardOverview />}
+              {activeTab === AdminTabs.PRODUCTS && <ProductsManager />}
+              {activeTab === AdminTabs.ORDERS && <OrdersManager />}
+              {activeTab === AdminTabs.TESTIMONIALS && <TestimonialsManager />}
+              {activeTab === AdminTabs.PROMOCODES && <PromocodeManager />}
+              {activeTab === AdminTabs.SETTINGS && (
+                <div className="p-6 border rounded-lg bg-white shadow-sm">
+                  <h2 className="text-xl font-semibold mb-4">Paramètres</h2>
+                  <p className="text-muted-foreground">Fonctionnalité en cours de développement.</p>
+                </div>
+              )}
             </div>
           </SidebarInset>
         </div>

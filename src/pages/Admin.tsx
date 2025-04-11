@@ -13,6 +13,7 @@ import ProductsManager from '@/components/admin/ProductsManager';
 import AdminLogin from '@/components/admin/AdminLogin';
 import { products as initialProducts } from '@/lib/data';
 import { toast } from 'sonner';
+import { AdminTabs } from './AdminDashboard';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -111,7 +112,7 @@ const Admin = () => {
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => navigateToDashboard('orders')}
+                            onClick={() => navigateToDashboard(AdminTabs.ORDERS)}
                           >
                             Voir
                           </Button>
@@ -129,7 +130,7 @@ const Admin = () => {
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => navigateToDashboard('orders')}
+                            onClick={() => navigateToDashboard(AdminTabs.ORDERS)}
                           >
                             Voir
                           </Button>
@@ -147,7 +148,7 @@ const Admin = () => {
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => navigateToDashboard('orders')}
+                            onClick={() => navigateToDashboard(AdminTabs.ORDERS)}
                           >
                             Voir
                           </Button>
@@ -200,7 +201,7 @@ const Admin = () => {
                           <Button 
                             variant="ghost" 
                             size="sm" 
-                            onClick={() => toast.info("Cette fonctionnalité sera disponible prochainement")}
+                            onClick={() => navigateToDashboard(AdminTabs.SETTINGS)}
                           >
                             Voir
                           </Button>
@@ -216,7 +217,7 @@ const Admin = () => {
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => toast.info("Cette fonctionnalité sera disponible prochainement")}
+                            onClick={() => navigateToDashboard(AdminTabs.SETTINGS)}
                           >
                             Voir
                           </Button>
@@ -232,7 +233,7 @@ const Admin = () => {
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => toast.info("Cette fonctionnalité sera disponible prochainement")}
+                            onClick={() => navigateToDashboard(AdminTabs.SETTINGS)}
                           >
                             Voir
                           </Button>
