@@ -152,6 +152,74 @@ export const products: Product[] = [
     rating: 4.9,
     inStock: true,
     featured: false
+  },
+  {
+    id: "16",
+    name: "Beurre de karité naturel",
+    category: "cosmetique",
+    price: 14.99,
+    image: generateImageUrl(16),
+    description: "Beurre de karité 100% naturel, récolté et préparé selon les méthodes traditionnelles africaines, idéal pour la peau et les cheveux.",
+    rating: 4.9,
+    inStock: true,
+    featured: true
+  },
+  {
+    id: "17",
+    name: "Huile d'argan bio",
+    category: "cosmetique",
+    price: 24.99,
+    discountPrice: 19.99,
+    image: generateImageUrl(17),
+    description: "Huile d'argan pure et bio, pressée à froid et importée directement du Maroc, pour sublimer peau et cheveux.",
+    rating: 4.7,
+    inStock: true,
+    featured: false
+  },
+  {
+    id: "18",
+    name: "Savon noir traditionnel",
+    category: "cosmetique",
+    price: 9.99,
+    image: generateImageUrl(18),
+    description: "Savon noir traditionnel à l'eucalyptus, exfoliant naturel pour une peau douce et régénérée.",
+    rating: 4.8,
+    inStock: true,
+    featured: true
+  },
+  {
+    id: "19",
+    name: "Café éthiopien Yirgacheffe",
+    category: "agroalimentaire",
+    price: 12.99,
+    image: generateImageUrl(19),
+    description: "Café d'exception aux arômes fruités et floraux, torréfié artisanalement pour préserver ses saveurs uniques.",
+    rating: 4.9,
+    inStock: true,
+    featured: true
+  },
+  {
+    id: "20",
+    name: "Piment africain en poudre",
+    category: "agroalimentaire",
+    price: 7.99,
+    image: generateImageUrl(20),
+    description: "Mélange de piments africains séchés et moulus, parfait pour relever vos plats avec une touche authentique.",
+    rating: 4.6,
+    inStock: true,
+    featured: false
+  },
+  {
+    id: "21",
+    name: "Assortiment d'épices africaines",
+    category: "agroalimentaire",
+    price: 29.99,
+    discountPrice: 24.99,
+    image: generateImageUrl(21),
+    description: "Coffret contenant 6 épices traditionnelles africaines sélectionnées pour leur qualité et leur authenticité.",
+    rating: 4.8,
+    inStock: true,
+    featured: true
   }
 ];
 
@@ -159,7 +227,9 @@ export const categories = [
   { id: "mode", name: "Vêtements", count: products.filter(p => p.category === "mode").length },
   { id: "tissus", name: "Tissus & Pagnes", count: products.filter(p => p.category === "tissus").length },
   { id: "accessoires", name: "Accessoires", count: products.filter(p => p.category === "accessoires").length },
-  { id: "bijoux", name: "Bijoux Africains", count: products.filter(p => p.category === "bijoux").length }
+  { id: "bijoux", name: "Bijoux Africains", count: products.filter(p => p.category === "bijoux").length },
+  { id: "cosmetique", name: "Cosmétique", count: products.filter(p => p.category === "cosmetique").length },
+  { id: "agroalimentaire", name: "Agroalimentaire", count: products.filter(p => p.category === "agroalimentaire").length }
 ];
 
 // Liste des pays pour le formulaire de livraison
