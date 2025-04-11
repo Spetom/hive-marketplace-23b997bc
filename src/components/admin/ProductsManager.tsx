@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { Product } from '@/lib/data';
 import { Button } from '@/components/ui/button';
@@ -58,7 +59,7 @@ const ProductsManager = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [autoSaveEnabled, setAutoSaveEnabled] = useState(false);
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(false); // Initialiser à false au lieu de true
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -220,6 +221,7 @@ const ProductsManager = () => {
     });
     setIsCreating(true);
     setUnsavedChanges(false);
+    // Ne pas activer la sauvegarde automatique lors de la création
     setAutoSaveEnabled(false);
     setIsDialogOpen(true);
   };
