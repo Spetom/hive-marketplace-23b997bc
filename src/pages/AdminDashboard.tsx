@@ -18,7 +18,7 @@ import {
   SidebarInset
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Users, Tag, BarChart3, Settings, LogOut, Star, Ticket } from "lucide-react";
+import { ShoppingBag, Users, Tag, BarChart3, Settings, LogOut, Star, Ticket, Flower, Utensils } from "lucide-react";
 
 // Admin Components
 import ProductsManager from '@/components/admin/ProductsManager';
@@ -34,6 +34,8 @@ export enum AdminTabs {
   ORDERS = 'orders',
   TESTIMONIALS = 'testimonials',
   PROMOCODES = 'promocodes',
+  COSMETICS = 'cosmetics',
+  AGRO_PRODUCTS = 'agro_products',
   SETTINGS = 'settings',
 }
 
@@ -106,6 +108,28 @@ const AdminDashboard = () => {
                   >
                     <ShoppingBag className="size-4" />
                     <span>Produits</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                
+                <SidebarMenuItem>
+                  <SidebarMenuButton 
+                    tooltip="Cosmétiques" 
+                    isActive={activeTab === AdminTabs.COSMETICS}
+                    onClick={() => setActiveTab(AdminTabs.COSMETICS)}
+                  >
+                    <Flower className="size-4" />
+                    <span>Cosmétiques</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                
+                <SidebarMenuItem>
+                  <SidebarMenuButton 
+                    tooltip="Produits Agroalimentaires" 
+                    isActive={activeTab === AdminTabs.AGRO_PRODUCTS}
+                    onClick={() => setActiveTab(AdminTabs.AGRO_PRODUCTS)}
+                  >
+                    <Utensils className="size-4" />
+                    <span>Agroalimentaires</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 
@@ -184,6 +208,8 @@ const AdminDashboard = () => {
                 <h1 className="text-2xl font-bold text-ruche-purple">
                   {activeTab === AdminTabs.DASHBOARD && 'Tableau de bord'}
                   {activeTab === AdminTabs.PRODUCTS && 'Gestion des produits'}
+                  {activeTab === AdminTabs.COSMETICS && 'Gestion des cosmétiques'}
+                  {activeTab === AdminTabs.AGRO_PRODUCTS && 'Gestion des produits agroalimentaires'}
                   {activeTab === AdminTabs.ORDERS && 'Gestion des commandes'}
                   {activeTab === AdminTabs.TESTIMONIALS && 'Gestion des témoignages'}
                   {activeTab === AdminTabs.PROMOCODES && 'Gestion des codes promo'}
@@ -192,7 +218,9 @@ const AdminDashboard = () => {
               </div>
               
               {activeTab === AdminTabs.DASHBOARD && <DashboardOverview />}
-              {activeTab === AdminTabs.PRODUCTS && <ProductsManager />}
+              {activeTab === AdminTabs.PRODUCTS && <ProductsManager categoryFilter="mode" />}
+              {activeTab === AdminTabs.COSMETICS && <ProductsManager categoryFilter="cosmetique" />}
+              {activeTab === AdminTabs.AGRO_PRODUCTS && <ProductsManager categoryFilter="agroalimentaire" />}
               {activeTab === AdminTabs.ORDERS && <OrdersManager />}
               {activeTab === AdminTabs.TESTIMONIALS && <TestimonialsManager />}
               {activeTab === AdminTabs.PROMOCODES && <PromocodeManager />}

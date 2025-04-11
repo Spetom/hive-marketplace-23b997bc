@@ -1,90 +1,99 @@
 
-import { useState, useEffect, useRef } from 'react';
-import { Shield, Truck, CreditCard, Heart } from 'lucide-react';
-
-const features = [
-  {
-    icon: <Truck size={32} className="text-ruche-gold" />,
-    title: "Livraison rapide",
-    description: "Profitez de notre service de livraison rapide partout au Bénin et dans la sous-région."
-  },
-  {
-    icon: <Shield size={32} className="text-ruche-gold" />,
-    title: "Produits authentiques",
-    description: "Tous nos produits sont 100% authentiques avec une garantie de qualité."
-  },
-  {
-    icon: <CreditCard size={32} className="text-ruche-gold" />,
-    title: "Paiement sécurisé",
-    description: "Multiples options de paiement sécurisées pour votre tranquillité d'esprit."
-  },
-  {
-    icon: <Heart size={32} className="text-ruche-gold" />,
-    title: "Service client dévoué",
-    description: "Notre équipe est disponible pour vous assister à chaque étape de votre achat."
-  }
-];
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { ShoppingBag, Scissors, Utensils, Flower, Package } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Features = () => {
-  const [visibleItems, setVisibleItems] = useState<number[]>([]);
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
   
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          const timer = setTimeout(() => {
-            const indices = Array.from({ length: features.length }, (_, i) => i);
-            setVisibleItems(indices);
-          }, 300);
-          
-          return () => clearTimeout(timer);
-        }
-      },
-      { threshold: 0.2 }
-    );
-    
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-    
-    return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
-    };
-  }, []);
+  const handleCategoryClick = (category: string) => {
+    navigate(`/shop?category=${category}`);
+  };
   
   return (
-    <section ref={sectionRef} className="py-20 bg-white">
+    <section className="py-16 bg-white">
       <div className="container-custom">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="heading-2 text-ruche-purple mb-4">Pourquoi nous choisir?</h2>
-          <p className="text-muted-foreground text-lg">
-            La Ruche d'Or s'engage à offrir une expérience d'achat exceptionnelle.
+        <div className="text-center mb-12">
+          <h2 className="heading-2 text-ruche-purple mb-3">Nos Produits & Services</h2>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Découvrez notre sélection de produits africains et nos services de qualité
           </p>
         </div>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className={`bg-white rounded-xl p-6 border border-border hover:border-ruche-gold hover:shadow-lg transition-all duration-500 hover:-translate-y-1 ${
-                visibleItems.includes(index) ? 'animate-slide-up opacity-100' : 'opacity-0'
-              }`}
-              style={{ transitionDelay: `${index * 100}ms` }}
-            >
-              <div className="bg-ruche-purple/5 rounded-full w-16 h-16 flex items-center justify-center mb-6">
-                {feature.icon}
-              </div>
-              <h3 className="font-heading font-semibold text-xl mb-3 text-ruche-purple">
-                {feature.title}
-              </h3>
-              <p className="text-muted-foreground">
-                {feature.description}
-              </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+          <div 
+            className="bg-white rounded-xl border border-border p-6 text-center hover:shadow-lg transition-all hover:border-ruche-gold cursor-pointer"
+            onClick={() => handleCategoryClick('mode')}
+          >
+            <div className="w-16 h-16 bg-ruche-purple/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ShoppingBag className="h-8 w-8 text-ruche-purple" />
             </div>
-          ))}
+            <h3 className="font-heading font-semibold text-lg text-ruche-purple mb-2">Mode Africaine</h3>
+            <p className="text-muted-foreground text-sm">
+              Vêtements et accessoires inspirés des traditions africaines
+            </p>
+          </div>
+          
+          <div 
+            className="bg-white rounded-xl border border-border p-6 text-center hover:shadow-lg transition-all hover:border-ruche-gold cursor-pointer"
+            onClick={() => handleCategoryClick('tissus')}
+          >
+            <div className="w-16 h-16 bg-ruche-purple/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Package className="h-8 w-8 text-ruche-purple" />
+            </div>
+            <h3 className="font-heading font-semibold text-lg text-ruche-purple mb-2">Tissus & Pagnes</h3>
+            <p className="text-muted-foreground text-sm">
+              Pagnes et tissus authentiques pour vos créations
+            </p>
+          </div>
+          
+          <div
+            className="bg-white rounded-xl border border-border p-6 text-center hover:shadow-lg transition-all hover:border-ruche-gold cursor-pointer"
+            onClick={() => handleCategoryClick('cosmetique')}
+          >
+            <div className="w-16 h-16 bg-ruche-purple/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Flower className="h-8 w-8 text-ruche-purple" />
+            </div>
+            <h3 className="font-heading font-semibold text-lg text-ruche-purple mb-2">Cosmétiques</h3>
+            <p className="text-muted-foreground text-sm">
+              Produits naturels de beauté et soins du corps africains
+            </p>
+          </div>
+          
+          <div
+            className="bg-white rounded-xl border border-border p-6 text-center hover:shadow-lg transition-all hover:border-ruche-gold cursor-pointer"
+            onClick={() => handleCategoryClick('agroalimentaire')}
+          >
+            <div className="w-16 h-16 bg-ruche-purple/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Utensils className="h-8 w-8 text-ruche-purple" />
+            </div>
+            <h3 className="font-heading font-semibold text-lg text-ruche-purple mb-2">Agroalimentaire</h3>
+            <p className="text-muted-foreground text-sm">
+              Épices, café et autres produits alimentaires africains authentiques
+            </p>
+          </div>
+          
+          <div
+            className="bg-white rounded-xl border border-border p-6 text-center hover:shadow-lg transition-all hover:border-ruche-gold cursor-pointer"
+            onClick={() => navigate('/shop', { state: { activeTab: 'services' } })}
+          >
+            <div className="w-16 h-16 bg-ruche-purple/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Scissors className="h-8 w-8 text-ruche-purple" />
+            </div>
+            <h3 className="font-heading font-semibold text-lg text-ruche-purple mb-2">Service Couture</h3>
+            <p className="text-muted-foreground text-sm">
+              Service de couture sur mesure et retouches
+            </p>
+          </div>
+        </div>
+        
+        <div className="mt-10 text-center">
+          <Button asChild variant="default" className="bg-ruche-gold hover:bg-ruche-gold-light text-white">
+            <Link to="/shop">
+              Découvrir tous nos produits
+            </Link>
+          </Button>
         </div>
       </div>
     </section>

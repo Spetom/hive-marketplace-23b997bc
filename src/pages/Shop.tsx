@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import ProductGrid from '@/components/shop/ProductGrid';
 import { categories } from '@/lib/data';
 import { Helmet } from 'react-helmet';
@@ -7,13 +8,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, FilterX, ShoppingBag, Scissors, Briefcase } from 'lucide-react';
+import { Search, FilterX, ShoppingBag, Scissors, Briefcase, Flower, Utensils } from 'lucide-react';
 import { Product } from '@/lib/data';
 import { fetchProducts, mapSupabaseToProduct } from '@/services/productService';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const Shop = () => {
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get('category');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -43,7 +46,17 @@ const Shop = () => {
       setActiveTab(storedTab);
       localStorage.removeItem('activeShopTab');
     }
-  }, []);
+    
+    // Vérifier si nous avons un state avec activeTab
+    if (location.state && typeof location.state === 'object') {
+      const state = location.state as { activeTab?: string };
+      if (state.activeTab) {
+        setActiveTab(state.activeTab);
+        // Nettoyer le state après l'avoir utilisé
+        window.history.replaceState({}, document.title);
+      }
+    }
+  }, [location]);
   
   useEffect(() => {
     if (isLoading) {
@@ -107,19 +120,35 @@ const Shop = () => {
     return products.filter(product => product.category === categoryId).length;
   };
   
+  // Récupérer l'icône appropriée pour chaque catégorie
+  const getCategoryIcon = (categoryId: string) => {
+    switch (categoryId) {
+      case 'mode':
+        return <ShoppingBag className="h-4 w-4 mr-2" />;
+      case 'tissus':
+        return <ShoppingBag className="h-4 w-4 mr-2" />;
+      case 'cosmetique':
+        return <Flower className="h-4 w-4 mr-2" />;
+      case 'agroalimentaire':
+        return <Utensils className="h-4 w-4 mr-2" />;
+      default:
+        return <ShoppingBag className="h-4 w-4 mr-2" />;
+    }
+  };
+  
   return (
     <>
       <Helmet>
         <title>Boutique | LA RUCHE D'OR</title>
-        <meta name="description" content="Découvrez notre collection de prêt-à-porter africain, pagnes et nos services de couture sur mesure." />
+        <meta name="description" content="Découvrez notre collection de prêt-à-porter africain, pagnes, cosmétiques et produits agroalimentaires. Profitez aussi de nos services de couture sur mesure." />
       </Helmet>
       
       <div className="pt-24 pb-20">
         <div className="container-custom">
           <div className="mb-12 text-center">
             <h1 className="heading-1 text-ruche-purple mb-4">Notre Boutique</h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Découvrez notre collection de prêt-à-porter africain, pagnes et nos services de couture sur mesure.
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+              Découvrez notre collection de prêt-à-porter africain, pagnes, cosmétiques naturels et produits agroalimentaires. Profitez aussi de nos services de couture sur mesure.
             </p>
           </div>
           
@@ -131,7 +160,7 @@ const Shop = () => {
                 onClick={() => setActiveTab('pret-a-porter')}
               >
                 <ShoppingBag size={18} />
-                Prêt-à-porter Africain
+                Boutique
               </Button>
               <Button 
                 variant={activeTab === 'services' ? 'default' : 'ghost'}
@@ -161,7 +190,7 @@ const Shop = () => {
                   </div>
                 </div>
                 
-                <div className="mb-6">
+                <ScrollArea className="h-[280px] pr-4 mb-6">
                   <h3 className="font-heading font-semibold text-lg text-ruche-purple mb-4">Catégories</h3>
                   <div className="space-y-2">
                     {categories.map(category => (
@@ -174,14 +203,15 @@ const Shop = () => {
                         />
                         <label 
                           htmlFor={`category-${category.id}`}
-                          className="ml-2 text-muted-foreground cursor-pointer"
+                          className="ml-2 text-muted-foreground cursor-pointer flex items-center"
                         >
+                          {getCategoryIcon(category.id)}
                           {category.name} ({getCategoryCount(category.id)})
                         </label>
                       </div>
                     ))}
                   </div>
-                </div>
+                </ScrollArea>
                 
                 <div className="mb-6">
                   <h3 className="font-heading font-semibold text-lg text-ruche-purple mb-4">Prix</h3>
@@ -249,8 +279,8 @@ const Shop = () => {
                 </div>
                 
                 {isLoading ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {Array.from({ length: 8 }).map((_, index) => (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+                    {Array.from({ length: 9 }).map((_, index) => (
                       <div key={index} className="space-y-3">
                         <Skeleton className="h-60 w-full rounded-lg" />
                         <Skeleton className="h-4 w-3/4" />

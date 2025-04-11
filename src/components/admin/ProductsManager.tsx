@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Product } from '@/lib/data';
 import { Button } from '@/components/ui/button';
@@ -53,13 +52,17 @@ import {
   uploadProductImage
 } from '@/services/productService';
 
-const ProductsManager = () => {
+interface ProductsManagerProps {
+  categoryFilter?: string;
+}
+
+const ProductsManager = ({ categoryFilter }: ProductsManagerProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [autoSaveEnabled, setAutoSaveEnabled] = useState(false); // Initialiser à false au lieu de true
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(false);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -69,7 +72,7 @@ const ProductsManager = () => {
   const [tempProduct, setTempProduct] = useState<Product>({
     id: '',
     name: '',
-    category: 'mode',
+    category: categoryFilter || 'mode',
     price: 0,
     image: '',
     description: '',
@@ -78,13 +81,17 @@ const ProductsManager = () => {
     featured: false
   });
 
-  const { data: productsList = [], isLoading, isError, refetch } = useQuery({
+  const { data: productsData = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
       const products = await fetchProducts();
       return products.map(mapSupabaseToProduct);
     },
   });
+
+  const productsList = categoryFilter 
+    ? productsData.filter(product => product.category === categoryFilter)
+    : productsData;
 
   const createMutation = useMutation({
     mutationFn: (product: Omit<Product, 'id'>) => createProduct(product),
@@ -209,9 +216,9 @@ const ProductsManager = () => {
   const handleCreateProduct = () => {
     setEditingProduct(null);
     setTempProduct({
-      id: '', // l'ID sera généré par Supabase
+      id: '',
       name: '',
-      category: 'mode',
+      category: categoryFilter || 'mode',
       price: 0,
       image: '',
       description: '',
@@ -221,7 +228,6 @@ const ProductsManager = () => {
     });
     setIsCreating(true);
     setUnsavedChanges(false);
-    // Ne pas activer la sauvegarde automatique lors de la création
     setAutoSaveEnabled(false);
     setIsDialogOpen(true);
   };
@@ -285,7 +291,7 @@ const ProductsManager = () => {
   };
 
   const exportData = () => {
-    const dataStr = JSON.stringify(productsList, null, 2);
+    const dataStr = JSON.stringify(filteredProducts, null, 2);
     const dataUri = `data:application/json;charset=utf-8,${encodeURIComponent(dataStr)}`;
     
     const exportFileDefaultName = 'products.json';
@@ -298,6 +304,12 @@ const ProductsManager = () => {
     toast.success('Données exportées avec succès', {
       description: "Toutes les modifications ont été incluses dans l'export."
     });
+  };
+
+  const getCategoryTitle = () => {
+    if (!categoryFilter) return "Tous les produits";
+    const category = categories.find(cat => cat.id === categoryFilter);
+    return category ? category.name : "Produits";
   };
 
   return (
@@ -335,6 +347,11 @@ const ProductsManager = () => {
           </Button>
           {isLoading && <span className="text-sm text-muted-foreground">Chargement...</span>}
           {isError && <span className="text-sm text-red-500">Erreur de chargement</span>}
+          {categoryFilter && (
+            <span className="text-sm font-medium text-ruche-purple">
+              {getCategoryTitle()}
+            </span>
+          )}
         </div>
         
         <div className="flex gap-2">
@@ -352,7 +369,7 @@ const ProductsManager = () => {
             className="bg-ruche-purple hover:bg-ruche-purple/90"
           >
             <PlusCircle className="mr-2 h-4 w-4" />
-            Nouveau produit
+            {categoryFilter ? `Nouveau ${getCategoryTitle().slice(0, -1)}` : 'Nouveau produit'}
           </Button>
         </div>
       </div>
@@ -363,7 +380,7 @@ const ProductsManager = () => {
             <TableRow>
               <TableHead className="w-[100px]">Image</TableHead>
               <TableHead>Nom</TableHead>
-              <TableHead>Catégorie</TableHead>
+              {!categoryFilter && <TableHead>Catégorie</TableHead>}
               <TableHead className="text-right">Prix</TableHead>
               <TableHead className="text-center">En stock</TableHead>
               <TableHead className="text-center">Mis en avant</TableHead>
@@ -386,9 +403,11 @@ const ProductsManager = () => {
                   </div>
                 </TableCell>
                 <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell>
-                  {categories.find(c => c.id === product.category)?.name || product.category}
-                </TableCell>
+                {!categoryFilter && (
+                  <TableCell>
+                    {categories.find(c => c.id === product.category)?.name || product.category}
+                  </TableCell>
+                )}
                 <TableCell className="text-right">
                   {product.price.toFixed(2)}€
                   {product.discountPrice && (
@@ -433,7 +452,7 @@ const ProductsManager = () => {
               </TableRow>
             )) : (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={categoryFilter ? 6 : 7} className="text-center py-8 text-muted-foreground">
                   {isLoading ? 
                     'Chargement des produits...' : 
                     isError ? 
