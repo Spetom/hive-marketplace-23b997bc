@@ -8,7 +8,8 @@ export async function fetchProducts() {
   try {
     const { data, error } = await supabase
       .from('products')
-      .select('*');
+      .select('*')
+      .order('created_at', { ascending: false });
 
     if (error) throw error;
     
@@ -70,19 +71,21 @@ export async function createProduct(product: Omit<Product, 'id'>) {
 // Fonction pour mettre à jour un produit
 export async function updateProduct(id: string, product: Partial<Product>) {
   try {
+    const updateData: any = {};
+    
+    if (product.name !== undefined) updateData.name = product.name;
+    if (product.category !== undefined) updateData.category = product.category;
+    if (product.price !== undefined) updateData.price = product.price;
+    if (product.discountPrice !== undefined) updateData.discount_price = product.discountPrice;
+    if (product.description !== undefined) updateData.description = product.description;
+    if (product.image !== undefined) updateData.image_url = product.image;
+    if (product.inStock !== undefined) updateData.in_stock = product.inStock;
+    if (product.featured !== undefined) updateData.featured = product.featured;
+    if (product.rating !== undefined) updateData.rating = product.rating;
+    
     const { data, error } = await supabase
       .from('products')
-      .update({
-        name: product.name,
-        category: product.category,
-        price: product.price,
-        discount_price: product.discountPrice,
-        description: product.description,
-        image_url: product.image,
-        in_stock: product.inStock,
-        featured: product.featured,
-        rating: product.rating
-      })
+      .update(updateData)
       .eq('id', id)
       .select();
 
@@ -99,6 +102,29 @@ export async function updateProduct(id: string, product: Partial<Product>) {
 // Fonction pour supprimer un produit
 export async function deleteProduct(id: string) {
   try {
+    // Récupérer d'abord les informations sur le produit pour savoir s'il y a une image à supprimer
+    const { data: product } = await supabase
+      .from('products')
+      .select('image_url')
+      .eq('id', id)
+      .single();
+    
+    // Supprimer l'image associée au produit si elle existe
+    if (product?.image_url) {
+      const imagePath = extractStoragePath(product.image_url);
+      if (imagePath) {
+        const { error: storageError } = await supabase.storage
+          .from('product-images')
+          .remove([imagePath]);
+          
+        if (storageError) {
+          console.warn('Erreur lors de la suppression de l\'image:', storageError);
+          // On continue malgré l'erreur pour supprimer le produit
+        }
+      }
+    }
+    
+    // Supprimer le produit
     const { error } = await supabase
       .from('products')
       .delete()
@@ -114,16 +140,31 @@ export async function deleteProduct(id: string) {
   }
 }
 
-// Nouvelle fonction pour uploader une image
+// Fonction pour extraire le chemin du fichier à partir de l'URL publique
+function extractStoragePath(url: string): string | null {
+  try {
+    // L'URL ressemble généralement à: https://.../storage/v1/object/public/product-images/filename.jpg
+    const match = url.match(/\/storage\/v1\/object\/public\/product-images\/(.+)$/);
+    return match ? match[1] : null;
+  } catch (error) {
+    console.error('Erreur lors de l\'extraction du chemin de stockage:', error);
+    return null;
+  }
+}
+
+// Fonction pour uploader une image
 export async function uploadProductImage(file: File): Promise<string | null> {
   try {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random().toString(36).substring(2, 15)}-${Date.now()}.${fileExt}`;
-    const filePath = `products/${fileName}`;
+    const filePath = `${fileName}`;
     
     const { error: uploadError } = await supabase.storage
       .from('product-images')
-      .upload(filePath, file);
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
     
     if (uploadError) throw uploadError;
     
