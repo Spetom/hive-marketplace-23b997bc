@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -130,15 +129,12 @@ const OrdersManager = () => {
   
   const exportOrdersToCSV = () => {
     try {
-      // Entêtes CSV
       let csvContent = "ID,Client,Email,Montant total,Statut,Date\n";
       
-      // Données des commandes
       orders.forEach((order) => {
         csvContent += `${order.id},${order.customer_name},"${order.customer_email}",${order.total_amount},"${order.status}","${format(new Date(order.created_at), 'dd/MM/yyyy HH:mm')}"\n`;
       });
       
-      // Créer un blob et télécharger
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -170,13 +166,11 @@ const OrdersManager = () => {
   };
   
   const filteredOrders = orders.filter(order => {
-    // Filtre par recherche
     const matchesSearch = 
       order.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.customer_email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.id.toLowerCase().includes(searchQuery.toLowerCase());
     
-    // Filtre par statut
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
     
     return matchesSearch && matchesStatus;
@@ -292,13 +286,12 @@ const OrdersManager = () => {
         </Table>
       </div>
       
-      {/* Dialog détail commande */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>Détails de la commande</DialogTitle>
             <DialogDescription>
-              Commande #{selectedOrder?.id}
+              {selectedOrder ? `Commande #${selectedOrder.id}` : 'Chargement...'}
             </DialogDescription>
           </DialogHeader>
           
@@ -316,9 +309,9 @@ const OrdersManager = () => {
                     <div className="mt-4">
                       <h3 className="text-sm font-medium mb-2">Adresse de livraison</h3>
                       <div className="border rounded-md p-3">
-                        <p>{selectedOrder.shipping_address.street}</p>
-                        <p>{selectedOrder.shipping_address.city}, {selectedOrder.shipping_address.postal_code}</p>
-                        <p>{selectedOrder.shipping_address.country}</p>
+                        <p>{String(selectedOrder.shipping_address.street || '')}</p>
+                        <p>{String(selectedOrder.shipping_address.city || '')}, {String(selectedOrder.shipping_address.postal_code || '')}</p>
+                        <p>{String(selectedOrder.shipping_address.country || '')}</p>
                       </div>
                     </div>
                   )}

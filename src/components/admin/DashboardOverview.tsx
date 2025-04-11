@@ -1,4 +1,7 @@
 
+// Fix for error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+// The specific issue is on line 68, which is likely related to the count results from Supabase
+
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
@@ -65,9 +68,9 @@ const DashboardOverview = () => {
         if (testimonialError) throw testimonialError;
         
         // Calculer le revenu total
-        const totalRevenue = revenueData?.reduce((acc, order) => acc + parseFloat(order.total_amount), 0) || 0;
+        const totalRevenue = revenueData?.reduce((acc, order) => acc + parseFloat(order.total_amount.toString()), 0) || 0;
         
-        // Mettre à jour les états
+        // Mettre à jour les états avec les valeurs typées correctement
         setOrderCount(orderCountResult || 0);
         setProductCount(productCountResult || 0);
         setRevenue(totalRevenue);
