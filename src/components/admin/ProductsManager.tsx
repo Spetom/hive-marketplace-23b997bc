@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Product } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,7 +36,9 @@ import {
   Save,
   RefreshCw,
   Database,
-  Download
+  Download,
+  Upload,
+  X
 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -47,7 +49,8 @@ import {
   createProduct, 
   updateProduct, 
   deleteProduct,
-  mapSupabaseToProduct 
+  mapSupabaseToProduct,
+  uploadProductImage
 } from '@/services/productService';
 
 const ProductsManager = () => {
@@ -58,6 +61,8 @@ const ProductsManager = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
   const [tempProduct, setTempProduct] = useState<Product>({
@@ -129,6 +134,20 @@ const ProductsManager = () => {
     }
   });
 
+  // Mutation pour uploader une image
+  const uploadMutation = useMutation({
+    mutationFn: uploadProductImage,
+    onSuccess: (data) => {
+      if (data) {
+        setTempProduct({...tempProduct, image: data});
+        setUnsavedChanges(true);
+      }
+    },
+    onSettled: () => {
+      setIsUploading(false);
+    }
+  });
+
   useEffect(() => {
     if (!isDialogOpen || !autoSaveEnabled || !unsavedChanges) return;
     
@@ -178,7 +197,7 @@ const ProductsManager = () => {
       name: '',
       category: 'mode',
       price: 0,
-      image: 'https://source.unsplash.com/random/300x300?product',
+      image: '',
       description: '',
       rating: 4,
       inStock: true,
@@ -192,6 +211,42 @@ const ProductsManager = () => {
   const handleTempProductChange = (updatedTempProduct: Product) => {
     setTempProduct(updatedTempProduct);
     setUnsavedChanges(true);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Vérifier le type du fichier (images seulement)
+    if (!file.type.startsWith('image/')) {
+      toast.error("Type de fichier non supporté", {
+        description: "Veuillez télécharger une image (JPG, PNG, GIF, etc.)"
+      });
+      return;
+    }
+
+    // Vérifier la taille du fichier (max 5 MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Fichier trop volumineux", {
+        description: "La taille du fichier ne doit pas dépasser 5 MB"
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    uploadMutation.mutate(file);
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
+  const removeImage = () => {
+    setTempProduct({...tempProduct, image: ''});
+    setUnsavedChanges(true);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const saveProduct = () => {
@@ -501,37 +556,69 @@ const ProductsManager = () => {
             
             <div className="space-y-4">
               <div>
-                <Label htmlFor="image">URL de l'image</Label>
-                <div className="flex">
-                  <Input 
-                    id="image" 
-                    value={tempProduct.image} 
-                    onChange={(e) => handleTempProductChange({...tempProduct, image: e.target.value})}
-                    placeholder="URL de l'image"
-                    className="flex-1"
-                  />
-                </div>
-              </div>
-              
-              <div className="mt-2">
-                <div className="h-40 w-full rounded-md overflow-hidden bg-gray-100 border border-border flex items-center justify-center">
+                <Label className="block mb-2">Image du produit</Label>
+                <input 
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+
+                <div className="h-40 w-full rounded-md overflow-hidden bg-gray-100 border border-border flex items-center justify-center relative">
                   {tempProduct.image ? (
-                    <img 
-                      src={tempProduct.image} 
-                      alt="Aperçu" 
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://placehold.co/300x300?text=Aperçu';
-                      }}
-                    />
+                    <div className="relative w-full h-full">
+                      <img 
+                        src={tempProduct.image} 
+                        alt="Aperçu" 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://placehold.co/300x300?text=Aperçu';
+                        }}
+                      />
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="absolute top-2 right-2 bg-white/80 hover:bg-white/90 rounded-full"
+                        onClick={removeImage}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   ) : (
-                    <div className="text-center">
+                    <div 
+                      className="text-center cursor-pointer w-full h-full flex flex-col items-center justify-center"
+                      onClick={triggerFileInput}
+                    >
                       <ImagePlus className="mx-auto h-8 w-8 text-muted-foreground" />
                       <p className="text-sm text-muted-foreground mt-2">
-                        Aucune image
+                        Cliquez pour ajouter une image
                       </p>
                     </div>
                   )}
+                </div>
+
+                <div className="mt-2 flex justify-center">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={triggerFileInput}
+                    disabled={isUploading}
+                    type="button"
+                    className="w-full"
+                  >
+                    {isUploading ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        Téléchargement...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4 mr-2" />
+                        {tempProduct.image ? 'Changer d\'image' : 'Télécharger une image'}
+                      </>
+                    )}
+                  </Button>
                 </div>
               </div>
               

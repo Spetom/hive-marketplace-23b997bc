@@ -114,6 +114,39 @@ export async function deleteProduct(id: string) {
   }
 }
 
+// Nouvelle fonction pour uploader une image
+export async function uploadProductImage(file: File): Promise<string | null> {
+  try {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2, 15)}-${Date.now()}.${fileExt}`;
+    const filePath = `products/${fileName}`;
+    
+    const { error: uploadError } = await supabase.storage
+      .from('product-images')
+      .upload(filePath, file);
+    
+    if (uploadError) throw uploadError;
+    
+    const { data } = supabase.storage
+      .from('product-images')
+      .getPublicUrl(filePath);
+      
+    if (!data || !data.publicUrl) {
+      throw new Error("Impossible d'obtenir l'URL publique");
+    }
+    
+    toast.success("Image téléchargée avec succès", {
+      description: "L'image est maintenant disponible pour votre produit."
+    });
+    
+    return data.publicUrl;
+  } catch (error) {
+    console.error('Erreur lors du téléchargement de l\'image:', error);
+    toast.error('Impossible de télécharger l\'image');
+    return null;
+  }
+}
+
 // Fonction pour adapter les données de Supabase au format de l'application
 export function mapSupabaseToProduct(item: any): Product {
   return {
@@ -129,4 +162,3 @@ export function mapSupabaseToProduct(item: any): Product {
     featured: item.featured || false
   };
 }
-
