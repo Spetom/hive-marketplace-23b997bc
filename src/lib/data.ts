@@ -1,3 +1,4 @@
+
 // Function to generate image URLs for products without specific images
 const generateImageUrl = (index: number): string => {
   return `https://source.unsplash.com/random/300x300?african,fabric&sig=${index}`;
@@ -134,7 +135,8 @@ export const products: Product[] = [
 
 export const categories = [
   { id: "mode", name: "Vêtements", count: products.filter(p => p.category === "mode").length },
-  { id: "tissus", name: "Tissus & Pagnes", count: products.filter(p => p.category === "tissus").length }
+  { id: "tissus", name: "Tissus & Pagnes", count: products.filter(p => p.category === "tissus").length },
+  { id: "accessoires", name: "Accessoires", count: products.filter(p => p.category === "accessoires").length }
 ];
 
 // Liste des pays pour le formulaire de livraison
