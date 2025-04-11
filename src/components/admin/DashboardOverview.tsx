@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { BarChart3, ShoppingBag, Users, ArrowUpRight, ArrowDownRight, Calendar, Tag, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from '@/integrations/supabase/client';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Charts
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell } from 'recharts';
@@ -33,6 +34,7 @@ const COLORS = ['#8b5cf6', '#c084fc', '#a78bfa', '#ddd6fe', '#ede9fe', '#f3f4f6'
 const DashboardOverview = () => {
   const [stats, setStats] = useState<Stats>(defaultStats);
   const [isLoading, setIsLoading] = useState(true);
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -61,7 +63,13 @@ const DashboardOverview = () => {
         
         // Process data
         const uniqueCustomers = new Set(ordersData?.map(order => order.customer_email) || []);
-        const totalRevenue = ordersData?.reduce((sum, order) => sum + (parseFloat(order.total_amount.toString()) || 0), 0) || 0;
+        // Fix the type error by converting total_amount to string before parsing
+        const totalRevenue = ordersData?.reduce((sum, order) => {
+          const amount = typeof order.total_amount === 'string' 
+            ? parseFloat(order.total_amount) 
+            : order.total_amount;
+          return sum + (amount || 0);
+        }, 0) || 0;
         
         // Count products by category
         const categoryCounts: Record<string, number> = {};
@@ -171,7 +179,7 @@ const DashboardOverview = () => {
                       cy="50%"
                       labelLine={false}
                       label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
+                      outerRadius={isMobile ? 60 : 80}
                       fill="#8884d8"
                       dataKey="value"
                     >
@@ -208,7 +216,11 @@ const DashboardOverview = () => {
                       <div className="font-medium">{order.customer_email}</div>
                       <div className="text-sm text-muted-foreground">#{order.id.substring(0, 8)}</div>
                     </div>
-                    <div className="font-medium">{parseFloat(order.total_amount.toString()).toFixed(2)}€</div>
+                    <div className="font-medium">
+                      {typeof order.total_amount === 'string' 
+                        ? parseFloat(order.total_amount).toFixed(2) 
+                        : order.total_amount.toFixed(2)}€
+                    </div>
                   </div>
                 ))
               ) : (
