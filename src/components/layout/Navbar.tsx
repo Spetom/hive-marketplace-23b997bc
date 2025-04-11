@@ -74,7 +74,7 @@ const Navbar = () => {
           </nav>
           
           <div className="flex items-center space-x-4">
-            <Link to="/cart" className="relative">
+            <Link to="/checkout" className="relative">
               <Button 
                 variant="ghost" 
                 size="icon" 
