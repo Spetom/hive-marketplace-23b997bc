@@ -14,20 +14,20 @@ interface ProductGridProps {
   showFilters?: boolean;
 }
 
-const ProductGrid = ({ products: initialProducts, title, showFilters = false }: ProductGridProps) => {
+const ProductGrid = ({ title, showFilters = false }: ProductGridProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   
-  // Utiliser React Query pour récupérer les produits
+  // Utiliser React Query pour récupérer les produits directement depuis Supabase
   const { data: products = [], isLoading, isError } = useQuery({
     queryKey: ['products'],
     queryFn: async () => {
       const products = await fetchProducts();
       return products.map(mapSupabaseToProduct);
     },
-    initialData: initialProducts,
   });
   
+  // Filtrer les produits en fonction de la catégorie sélectionnée
   useEffect(() => {
     if (selectedCategory === 'all') {
       setFilteredProducts(products);
@@ -35,6 +35,11 @@ const ProductGrid = ({ products: initialProducts, title, showFilters = false }: 
       setFilteredProducts(products.filter(product => product.category === selectedCategory));
     }
   }, [selectedCategory, products]);
+  
+  // Calculer le nombre réel de produits par catégorie à partir des données de Supabase
+  const getCategoryProductCount = (categoryId: string): number => {
+    return products.filter(p => p.category === categoryId).length;
+  };
   
   return (
     <div>
@@ -68,7 +73,7 @@ const ProductGrid = ({ products: initialProducts, title, showFilters = false }: 
                 )}
                 onClick={() => setSelectedCategory(category.id)}
               >
-                {category.name} ({products.filter(p => p.category === category.id).length})
+                {category.name} ({getCategoryProductCount(category.id)})
               </Button>
             ))}
           </div>
