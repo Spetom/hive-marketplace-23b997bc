@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Product } from "@/lib/data";
 import { toast } from "sonner";
@@ -155,35 +154,95 @@ function extractStoragePath(url: string): string | null {
 // Fonction pour uploader une image
 export async function uploadProductImage(file: File): Promise<string | null> {
   try {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random().toString(36).substring(2, 15)}-${Date.now()}.${fileExt}`;
-    const filePath = `${fileName}`;
+    console.log('Début du téléchargement de l\'image:', file.name, file.type, file.size);
     
-    const { error: uploadError } = await supabase.storage
+    // Vérifications préliminaires
+    if (!file.type.startsWith('image/')) {
+      toast.error("Type de fichier non supporté", {
+        description: "Veuillez télécharger une image (JPG, PNG, GIF, WebP)"
+      });
+      return null;
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB
+      toast.error("Fichier trop volumineux", {
+        description: "La taille du fichier ne doit pas dépasser 5 MB"
+      });
+      return null;
+    }
+    
+    const fileExt = file.name.split('.').pop()?.toLowerCase();
+    if (!fileExt || !['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExt)) {
+      toast.error("Extension de fichier non supportée", {
+        description: "Extensions autorisées: JPG, PNG, GIF, WebP"
+      });
+      return null;
+    }
+    
+    const fileName = `${Math.random().toString(36).substring(2, 15)}-${Date.now()}.${fileExt}`;
+    const filePath = fileName;
+    
+    console.log('Téléchargement vers:', filePath);
+    
+    // Tentative de téléchargement
+    const { data: uploadData, error: uploadError } = await supabase.storage
       .from('product-images')
       .upload(filePath, file, {
         cacheControl: '3600',
         upsert: false
       });
     
-    if (uploadError) throw uploadError;
+    if (uploadError) {
+      console.error('Erreur de téléchargement:', uploadError);
+      
+      // Messages d'erreur plus spécifiques
+      if (uploadError.message.includes('Invalid bucket')) {
+        toast.error("Erreur de configuration", {
+          description: "Le bucket de stockage n'est pas correctement configuré"
+        });
+      } else if (uploadError.message.includes('Duplicate')) {
+        toast.error("Fichier déjà existant", {
+          description: "Un fichier avec ce nom existe déjà, veuillez réessayer"
+        });
+      } else if (uploadError.message.includes('policy')) {
+        toast.error("Erreur d'autorisation", {
+          description: "Vous n'avez pas les permissions nécessaires pour télécharger des images"
+        });
+      } else {
+        toast.error("Erreur de téléchargement", {
+          description: uploadError.message || "Une erreur inconnue s'est produite"
+        });
+      }
+      return null;
+    }
     
-    const { data } = supabase.storage
+    console.log('Téléchargement réussi:', uploadData);
+    
+    // Obtenir l'URL publique
+    const { data: urlData } = supabase.storage
       .from('product-images')
       .getPublicUrl(filePath);
       
-    if (!data || !data.publicUrl) {
-      throw new Error("Impossible d'obtenir l'URL publique");
+    if (!urlData || !urlData.publicUrl) {
+      console.error('Impossible d\'obtenir l\'URL publique');
+      toast.error("Erreur de configuration", {
+        description: "Impossible d'obtenir l'URL publique de l'image"
+      });
+      return null;
     }
+    
+    console.log('URL publique générée:', urlData.publicUrl);
     
     toast.success("Image téléchargée avec succès", {
       description: "L'image est maintenant disponible pour votre produit."
     });
     
-    return data.publicUrl;
+    return urlData.publicUrl;
   } catch (error) {
     console.error('Erreur lors du téléchargement de l\'image:', error);
-    toast.error('Impossible de télécharger l\'image');
+    toast.error('Erreur système', {
+      description: 'Une erreur inattendue s\'est produite lors du téléchargement'
+    });
     return null;
   }
 }

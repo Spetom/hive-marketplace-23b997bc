@@ -37,7 +37,8 @@ import {
   Database,
   Download,
   Upload,
-  X
+  X,
+  AlertCircle
 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -140,14 +141,29 @@ const ProductsManager = ({ categoryFilter }: ProductsManagerProps) => {
 
   const uploadMutation = useMutation({
     mutationFn: uploadProductImage,
+    onMutate: () => {
+      setIsUploading(true);
+      console.log('Début du téléchargement...');
+    },
     onSuccess: (data) => {
+      console.log('Téléchargement terminé avec succès:', data);
       if (data) {
         setTempProduct({...tempProduct, image: data});
         setUnsavedChanges(true);
+        toast.success("Image téléchargée", {
+          description: "L'image a été ajoutée au produit."
+        });
       }
+    },
+    onError: (error) => {
+      console.error('Erreur de mutation:', error);
+      toast.error("Échec du téléchargement", {
+        description: "Impossible de télécharger l'image. Veuillez réessayer."
+      });
     },
     onSettled: () => {
       setIsUploading(false);
+      console.log('Téléchargement terminé');
     }
   });
 
@@ -239,11 +255,17 @@ const ProductsManager = ({ categoryFilter }: ProductsManagerProps) => {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      console.log('Aucun fichier sélectionné');
+      return;
+    }
 
+    console.log('Fichier sélectionné:', file.name, file.type, file.size);
+
+    // Validation côté client
     if (!file.type.startsWith('image/')) {
       toast.error("Type de fichier non supporté", {
-        description: "Veuillez télécharger une image (JPG, PNG, GIF, etc.)"
+        description: "Veuillez sélectionner une image (JPG, PNG, GIF, WebP)"
       });
       return;
     }
@@ -255,11 +277,12 @@ const ProductsManager = ({ categoryFilter }: ProductsManagerProps) => {
       return;
     }
 
-    setIsUploading(true);
+    console.log('Lancement du téléchargement...');
     uploadMutation.mutate(file);
   };
 
   const triggerFileInput = () => {
+    console.log('Déclenchement de la sélection de fichier');
     fileInputRef.current?.click();
   };
 
@@ -608,7 +631,7 @@ const ProductsManager = ({ categoryFilter }: ProductsManagerProps) => {
                         alt="Aperçu" 
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = 'https://placehold.co/300x300?text=Aperçu';
+                          (e.target as HTMLImageElement).src = 'https://placehold.co/300x300?text=Erreur+image';
                         }}
                       />
                       <Button 
@@ -616,19 +639,33 @@ const ProductsManager = ({ categoryFilter }: ProductsManagerProps) => {
                         size="icon" 
                         className="absolute top-2 right-2 bg-white/80 hover:bg-white/90 rounded-full"
                         onClick={removeImage}
+                        type="button"
                       >
                         <X className="h-4 w-4" />
                       </Button>
                     </div>
                   ) : (
                     <div 
-                      className="text-center cursor-pointer w-full h-full flex flex-col items-center justify-center"
+                      className="text-center cursor-pointer w-full h-full flex flex-col items-center justify-center hover:bg-gray-50 transition-colors"
                       onClick={triggerFileInput}
                     >
                       <ImagePlus className="mx-auto h-8 w-8 text-muted-foreground" />
                       <p className="text-sm text-muted-foreground mt-2">
                         Cliquez pour ajouter une image
                       </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        JPG, PNG, GIF, WebP (max 5MB)
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Indicateur de téléchargement */}
+                  {isUploading && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <div className="bg-white rounded-lg p-4 flex items-center gap-2">
+                        <RefreshCw className="h-4 w-4 animate-spin text-ruche-purple" />
+                        <span className="text-sm">Téléchargement...</span>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -655,6 +692,17 @@ const ProductsManager = ({ categoryFilter }: ProductsManagerProps) => {
                     )}
                   </Button>
                 </div>
+
+                {/* Message d'aide en cas d'erreur */}
+                {uploadMutation.isError && (
+                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md flex items-start gap-2">
+                    <AlertCircle className="h-4 w-4 text-red-500 mt-0.5" />
+                    <div className="text-sm text-red-700">
+                      <p className="font-medium">Problème de téléchargement</p>
+                      <p>Vérifiez votre connexion et réessayez. Si le problème persiste, contactez l'administrateur.</p>
+                    </div>
+                  </div>
+                )}
               </div>
               
               <div>
