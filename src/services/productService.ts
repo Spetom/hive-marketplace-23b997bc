@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Product } from "@/lib/data";
 import { toast } from "sonner";
@@ -152,20 +151,18 @@ function extractStoragePath(url: string): string | null {
   }
 }
 
-// Fonction pour uploader une image
+// Fonction pour uploader une image (simplifiée)
 export async function uploadProductImage(file: File): Promise<string | null> {
   try {
     console.log('=== DÉBUT TÉLÉCHARGEMENT IMAGE ===');
     console.log('Fichier:', {
       name: file.name,
       type: file.type,
-      size: file.size,
-      lastModified: file.lastModified
+      size: file.size
     });
     
-    // Vérifications préliminaires
+    // Vérifications de base
     if (!file.type.startsWith('image/')) {
-      console.error('Type de fichier invalide:', file.type);
       toast.error("Type de fichier non supporté", {
         description: "Veuillez télécharger une image (JPG, PNG, GIF, WebP)"
       });
@@ -173,21 +170,8 @@ export async function uploadProductImage(file: File): Promise<string | null> {
     }
 
     if (file.size > 5 * 1024 * 1024) { // 5MB
-      console.error('Fichier trop volumineux:', file.size);
       toast.error("Fichier trop volumineux", {
         description: "La taille du fichier ne doit pas dépasser 5 MB"
-      });
-      return null;
-    }
-    
-    // Vérifier les extensions autorisées
-    const fileExt = file.name.split('.').pop()?.toLowerCase();
-    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-    
-    if (!fileExt || !allowedExtensions.includes(fileExt)) {
-      console.error('Extension non supportée:', fileExt);
-      toast.error("Extension de fichier non supportée", {
-        description: "Extensions autorisées: JPG, PNG, GIF, WebP"
       });
       return null;
     }
@@ -195,94 +179,42 @@ export async function uploadProductImage(file: File): Promise<string | null> {
     // Générer un nom de fichier unique
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 15);
+    const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
     const fileName = `${randomId}-${timestamp}.${fileExt}`;
     
     console.log('Nom de fichier généré:', fileName);
     
-    // Vérifier la connexion Supabase
-    console.log('Vérification de la connexion Supabase...');
-    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
-    
-    if (bucketsError) {
-      console.error('Erreur lors de la vérification des buckets:', bucketsError);
-      toast.error("Erreur de connexion", {
-        description: "Impossible de se connecter au stockage. Vérifiez votre connexion."
-      });
-      return null;
-    }
-    
-    console.log('Buckets disponibles:', buckets);
-    
-    // Vérifier que le bucket product-images existe
-    const productImagesBucket = buckets?.find(bucket => bucket.id === 'product-images');
-    if (!productImagesBucket) {
-      console.error('Bucket product-images non trouvé');
-      toast.error("Erreur de configuration", {
-        description: "Le bucket de stockage des images n'est pas configuré"
-      });
-      return null;
-    }
-    
-    console.log('Bucket product-images trouvé:', productImagesBucket);
-    
-    // Tentative de téléchargement avec options spécifiques
+    // Upload vers Supabase Storage
     console.log('Début du téléchargement vers Supabase Storage...');
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { data, error } = await supabase.storage
       .from('product-images')
       .upload(fileName, file, {
         cacheControl: '3600',
-        upsert: false,
-        contentType: file.type
+        upsert: false
       });
     
-    if (uploadError) {
+    if (error) {
       console.error('=== ERREUR TÉLÉCHARGEMENT ===');
-      console.error('Code d\'erreur:', uploadError.name);
-      console.error('Message:', uploadError.message);
-      console.error('Détails complets:', uploadError);
+      console.error('Erreur:', error);
       
-      // Messages d'erreur plus spécifiques
-      if (uploadError.message.includes('Invalid bucket') || uploadError.message.includes('Bucket not found')) {
-        toast.error("Erreur de configuration", {
-          description: "Le bucket de stockage n'est pas correctement configuré"
-        });
-      } else if (uploadError.message.includes('Duplicate') || uploadError.message.includes('already exists')) {
-        toast.error("Fichier déjà existant", {
-          description: "Un fichier avec ce nom existe déjà, veuillez réessayer"
-        });
-      } else if (uploadError.message.includes('policy') || uploadError.message.includes('permission') || uploadError.message.includes('RLS')) {
-        toast.error("Erreur d'autorisation", {
-          description: "Vous n'avez pas les permissions nécessaires pour télécharger des images"
-        });
-      } else if (uploadError.message.includes('size') || uploadError.message.includes('too large')) {
-        toast.error("Fichier trop volumineux", {
-          description: "Le fichier dépasse la taille maximale autorisée"
-        });
-      } else if (uploadError.message.includes('timeout') || uploadError.message.includes('network')) {
-        toast.error("Erreur de réseau", {
-          description: "Problème de connexion. Vérifiez votre réseau et réessayez."
-        });
-      } else {
-        toast.error("Erreur de téléchargement", {
-          description: `Erreur: ${uploadError.message}`
-        });
-      }
+      toast.error("Erreur de téléchargement", {
+        description: `Impossible de télécharger l'image: ${error.message}`
+      });
       return null;
     }
     
     console.log('=== TÉLÉCHARGEMENT RÉUSSI ===');
-    console.log('Données de téléchargement:', uploadData);
+    console.log('Données:', data);
     
     // Obtenir l'URL publique
-    console.log('Génération de l\'URL publique...');
     const { data: urlData } = supabase.storage
       .from('product-images')
       .getPublicUrl(fileName);
       
-    if (!urlData || !urlData.publicUrl) {
+    if (!urlData?.publicUrl) {
       console.error('Impossible d\'obtenir l\'URL publique');
-      toast.error("Erreur de configuration", {
-        description: "Impossible d'obtenir l'URL publique de l'image"
+      toast.error("Erreur", {
+        description: "Impossible d'obtenir l'URL de l'image"
       });
       return null;
     }
@@ -290,19 +222,14 @@ export async function uploadProductImage(file: File): Promise<string | null> {
     console.log('=== URL PUBLIQUE GÉNÉRÉE ===');
     console.log('URL:', urlData.publicUrl);
     
-    toast.success("Image téléchargée avec succès", {
-      description: "L'image est maintenant disponible pour votre produit."
-    });
-    
+    toast.success("Image téléchargée avec succès");
     return urlData.publicUrl;
     
   } catch (error) {
-    console.error('=== ERREUR SYSTÈME CRITIQUE ===');
-    console.error('Type d\'erreur:', typeof error);
+    console.error('=== ERREUR SYSTÈME ===');
     console.error('Erreur complète:', error);
-    console.error('Stack trace:', error instanceof Error ? error.stack : 'Pas de stack trace');
     
-    toast.error('Erreur système critique', {
+    toast.error('Erreur système', {
       description: `Une erreur inattendue s'est produite: ${error instanceof Error ? error.message : 'Erreur inconnue'}`
     });
     return null;
